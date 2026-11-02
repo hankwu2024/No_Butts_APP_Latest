@@ -7,8 +7,8 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "npm ci --include=dev --prefix cigarette-screening-app && npm run build --prefix cigarette-screening-app && node scripts/fetch-pocketbase.mjs",
-    "start": "PB_BIN=./pocketbase PB_MIGRATIONS=./pocketbase-deploy/pb_migrations PB_PUBLIC=./cigarette-screening-app/dist sh pocketbase-deploy/entrypoint.sh"
+    "build": "npm ci --include=dev --prefix cigarette-screening-app && npm run build --prefix cigarette-screening-app && node scripts/assemble-public.mjs cigarette-screening-app/dist public && node scripts/fetch-pocketbase.mjs",
+    "start": "PB_BIN=./pocketbase PB_MIGRATIONS=./pocketbase-deploy/pb_migrations PB_PUBLIC=./public sh pocketbase-deploy/entrypoint.sh"
   },
   "dependencies": {
     "adm-zip": "^0.5.16"

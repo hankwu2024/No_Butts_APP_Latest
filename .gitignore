@@ -5,3 +5,4 @@
 *.html
 /pocketbase
 /node_modules/
+/public/

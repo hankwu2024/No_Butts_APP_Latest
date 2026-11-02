@@ -1,4 +1,4 @@
-# 菸蒂快篩 APP：前端（Vite）＋後端（PocketBase）打包成同一個容器
+# 個人網站（/）＋菸蒂快篩 APP（/screening/，前端 Vite＋後端 PocketBase）打包成同一個容器
 # 部署平台（Coolify / deploy.techedu.cc）：建置方式選「我有 Dockerfile」，Port 填 8090，
 # 勾選 Persistent Storage，資料夾路徑填 /app/data。
 
@@ -10,6 +10,9 @@ RUN npm ci
 COPY cigarette-screening-app/ ./
 # 不設定 VITE_POCKETBASE_URL：正式版直接連同一個網址（同源）
 RUN npm run build
+# 個人網站放根目錄、快篩前端放 /screening/
+COPY scripts/assemble-public.mjs /scripts/assemble-public.mjs
+RUN node /scripts/assemble-public.mjs /web/dist /web/public
 
 # ---------- 2. PocketBase ----------
 FROM alpine:3.20
@@ -23,7 +26,7 @@ RUN apk add --no-cache unzip ca-certificates \
 WORKDIR /app
 COPY pocketbase-deploy/pb_migrations ./pb_migrations
 COPY pocketbase-deploy/entrypoint.sh ./entrypoint.sh
-COPY --from=web /web/dist ./pb_public
+COPY --from=web /web/public ./pb_public
 RUN chmod +x /app/entrypoint.sh /app/pocketbase && mkdir -p /app/data
 
 EXPOSE 8090
