@@ -1,0 +1,16 @@
+{
+  "name": "no-butts-app",
+  "private": true,
+  "version": "1.0.0",
+  "description": "菸蒂快篩 APP：Vite 前端 + PocketBase 後端（Nixpacks 部署入口）",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "npm ci --include=dev --prefix cigarette-screening-app && npm run build --prefix cigarette-screening-app && node scripts/fetch-pocketbase.mjs",
+    "start": "PB_BIN=./pocketbase PB_MIGRATIONS=./pocketbase-deploy/pb_migrations PB_PUBLIC=./cigarette-screening-app/dist sh pocketbase-deploy/entrypoint.sh"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.16"
+  }
+}

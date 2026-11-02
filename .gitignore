@@ -3,3 +3,5 @@
 .gstack/
 *.docx
 *.html
+/pocketbase
+/node_modules/
