@@ -5,6 +5,7 @@ import type { ScreeningData, FilterState, SortState } from '../types';
 import FilterSortBar from './FilterSortBar';
 import PathPreview from './PathPreview';
 import BackupTools from './BackupTools';
+import Tower101Progress from './Tower101Progress';
 
 interface AdminPanelProps {
   userId: string;
@@ -97,6 +98,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ userId }) => {
         return res;
     }, [data, filter, sort]);
 
+    // 101 倍數看的是全部資料，不受篩選影響
+    const grandTotalPicked = useMemo(
+        () => data.reduce((sum, item) => sum + (item.actualPickedCount || 0), 0),
+        [data]
+    );
+
     const handleDelete = (docId: string) => {
         setDeleteConfirm({ show: true, id: docId });
     };
@@ -182,6 +189,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ userId }) => {
             </div>
 
             <div className="px-4">
+                <div className="mb-4">
+                    <Tower101Progress total={grandTotalPicked} />
+                </div>
                 <div className="mb-4">
                     <BackupTools records={filteredSortedData} userId={userId} />
                 </div>

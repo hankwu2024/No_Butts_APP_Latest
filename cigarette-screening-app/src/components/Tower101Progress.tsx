@@ -50,6 +50,8 @@ const Tower101Progress: React.FC<Tower101ProgressProps> = ({ total }) => {
   const ratio = (shown % BUTTS_PER_TOWER) / BUTTS_PER_TOWER;
   const fillHeight = 300 * ratio;
   const heightMeters = (shown * BUTT_LENGTH_CM) / 100;
+  // 疊了幾棟 101（可超過 1 棟），例如 101 × 1.05
+  const multiple = shown / BUTTS_PER_TOWER;
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-4 flex gap-4 items-end">
@@ -69,6 +71,9 @@ const Tower101Progress: React.FC<Tower101ProgressProps> = ({ total }) => {
 
       <div className="flex-1 min-w-0 pb-1">
         <p className="text-xs text-slate-500 font-bold mb-1">菸蒂直立疊起來有多高？</p>
+        <p className="inline-block text-lg font-extrabold text-white bg-emerald-600 rounded-lg px-3 py-0.5 mb-2 tabular-nums" aria-label={`相當於 ${multiple.toFixed(2)} 棟台北 101`}>
+          101 × {multiple.toFixed(2)}
+        </p>
         <p className="text-3xl font-bold text-emerald-600 leading-tight tabular-nums">
           {shown.toLocaleString()}
           <span className="text-sm text-slate-500 font-medium ml-1">根</span>
