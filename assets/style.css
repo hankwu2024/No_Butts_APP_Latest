@@ -939,3 +939,19 @@ body.lightbox-open { overflow: hidden; }
 }
 .photo-grid.photo-strip figure { scroll-snap-align: start; }
 @media (max-width: 860px) { .photo-grid.photo-strip { grid-auto-columns: 70%; } }
+
+/* ---------- 菸蒂快篩平台跳出視窗 ---------- */
+.app-popup { position: fixed; inset: 0; z-index: 300; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.app-popup[hidden] { display: none; }
+.app-popup-backdrop { position: absolute; inset: 0; background: rgba(10, 30, 18, 0.6); backdrop-filter: blur(4px); }
+.app-popup-panel { position: relative; width: min(480px, 100%); height: min(860px, 100%); background: #fff; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.45); }
+.app-popup-bar { display: flex; align-items: center; gap: 12px; padding: 10px 12px 10px 18px; background: var(--green-700); color: #fff; }
+.app-popup-title { flex: 1; font-weight: 700; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.app-popup-newtab { color: #d9f5e3; font-size: 0.82rem; font-weight: 600; white-space: nowrap; }
+.app-popup-close { border: 0; background: rgba(255, 255, 255, 0.18); color: #fff; width: 34px; height: 34px; border-radius: 50%; font-size: 1.4rem; line-height: 1; cursor: pointer; }
+.app-popup-close:hover { background: rgba(255, 255, 255, 0.32); }
+.app-popup-frame { flex: 1; width: 100%; border: 0; background: #f8fafc; }
+@media (max-width: 600px) {
+  .app-popup { padding: 0; }
+  .app-popup-panel { width: 100%; height: 100%; border-radius: 0; }
+}
