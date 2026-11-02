@@ -1,0 +1,10 @@
+node_modules
+**/node_modules
+**/dist
+cigarette-screening-app/pb
+**/.env*
+.git
+image
+*.docx
+*.html
+!cigarette-screening-app/index.html
