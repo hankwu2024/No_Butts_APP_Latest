@@ -6,12 +6,14 @@ import FilterSortBar from './FilterSortBar';
 import PathPreview from './PathPreview';
 import BackupTools from './BackupTools';
 import Tower101Progress from './Tower101Progress';
+import { useLang } from '../i18n';
 
 interface AdminPanelProps {
   userId: string;
 }
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ userId }) => {
+    const { t } = useLang();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [password, setPassword] = useState('');
     const [data, setData] = useState<ScreeningData[]>([]);
@@ -26,7 +28,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ userId }) => {
         if (password === '20120507') {
             setIsLoggedIn(true);
         } else {
-            alert("密碼錯誤");
+            alert(t('密碼錯誤', 'Wrong password'));
         }
     };
 
@@ -114,7 +116,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ userId }) => {
             await pb.collection('screenings').delete(deleteConfirm.id);
             setDeleteConfirm({ show: false, id: null });
         } catch (e) {
-            alert("刪除失敗");
+            alert(t('刪除失敗', 'Delete failed'));
             console.error(e);
         }
     };
@@ -126,18 +128,18 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ userId }) => {
                     <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
                         <Lock className="w-8 h-8 text-blue-600" />
                     </div>
-                    <h2 className="text-xl font-bold text-slate-800 mb-2">後台管理登入</h2>
-                    <p className="text-sm text-slate-500 mb-6">提示：wifi Hank 網路密碼</p>
+                    <h2 className="text-xl font-bold text-slate-800 mb-2">{t('後台管理登入', 'Admin login')}</h2>
+                    <p className="text-sm text-slate-500 mb-6">{t('提示：wifi Hank 網路密碼', 'Hint: the Hank Wi-Fi password')}</p>
                     <form onSubmit={handleLogin} className="space-y-4">
                         <input
                             type="password"
-                            placeholder="請輸入密碼"
+                            placeholder={t('請輸入密碼', 'Password')}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-blue-500"
                         />
                         <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors">
-                            登入系統
+                            {t('登入系統', 'Log in')}
                         </button>
                     </form>
                 </div>
@@ -160,15 +162,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ userId }) => {
                         <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
                             <Trash2 className="w-6 h-6 text-red-600" />
                         </div>
-                        <h3 className="font-bold text-lg text-slate-800 mb-2">確認刪除？</h3>
+                        <h3 className="font-bold text-lg text-slate-800 mb-2">{t('確認刪除？', 'Delete this record?')}</h3>
                         <p className="text-slate-600 text-sm mb-6 leading-relaxed">
-                            您確定要刪除這筆資料嗎？<br/>
-                            此操作<span className="text-red-600 font-bold">無法復原</span>。
+                            {t('您確定要刪除這筆資料嗎？', 'Are you sure you want to delete this record?')}<br/>
+                            {t('此操作', 'This ')}<span className="text-red-600 font-bold">{t('無法復原', 'cannot be undone')}</span>{t('。', '.')}
                         </p>
                         <div className="flex gap-3">
-                            <button onClick={() => setDeleteConfirm({show: false, id: null})} className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold hover:bg-slate-200 transition-colors">取消</button>
+                            <button onClick={() => setDeleteConfirm({show: false, id: null})} className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold hover:bg-slate-200 transition-colors">{t('取消', 'Cancel')}</button>
                             <button onClick={executeDelete} className="flex-1 py-3 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 transition-colors flex items-center justify-center gap-2">
-                                <Trash2 className="w-4 h-4" /> 確定刪除
+                                <Trash2 className="w-4 h-4" /> {t('確定刪除', 'Delete')}
                             </button>
                         </div>
                     </div>
@@ -179,12 +181,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ userId }) => {
                 <div>
                     <h2 className="text-xl font-bold mb-1 flex items-center gap-2">
                         <ShieldCheck className="w-5 h-5" />
-                        系統管理後台
+                        {t('系統管理後台', 'Admin Panel')}
                     </h2>
-                    <p className="text-slate-400 text-sm">資料維護與管理</p>
+                    <p className="text-slate-400 text-sm">{t('資料維護與管理', 'Manage and maintain data')}</p>
                 </div>
                 <button onClick={() => setIsLoggedIn(false)} className="bg-slate-700 hover:bg-slate-600 p-2 rounded-lg text-xs flex items-center gap-1 transition-colors">
-                    <LogOut className="w-4 h-4" /> 登出
+                    <LogOut className="w-4 h-4" /> {t('登出', 'Log out')}
                 </button>
             </div>
 
@@ -208,7 +210,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ userId }) => {
                     />
                 </div>
                 <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold text-slate-700">資料列表 ({filteredSortedData.length})</h3>
+                    <h3 className="font-bold text-slate-700">{t('資料列表', 'Records')} ({filteredSortedData.length})</h3>
                 </div>
 
                 <div className="space-y-3">
@@ -221,25 +223,25 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ userId }) => {
                                     </span>
                                     <span className="text-xs text-slate-500">{record.date}</span>
                                 </div>
-                                <button onClick={() => handleDelete(record.id!)} className="text-red-500 hover:bg-red-50 p-1.5 rounded transition-colors" title="刪除此筆資料">
+                                <button onClick={() => handleDelete(record.id!)} className="text-red-500 hover:bg-red-50 p-1.5 rounded transition-colors" title={t('刪除此筆資料', 'Delete this record')}>
                                     <Trash2 className="w-4 h-4" />
                                 </button>
                             </div>
 
                             <div className="text-sm text-slate-700">
-                                <span className="font-bold text-slate-500 text-xs mr-2">地點:</span>
+                                <span className="font-bold text-slate-500 text-xs mr-2">{t('地點:', 'Location:')}</span>
                                 {record.startAddress}
                             </div>
                             <div className="text-sm text-slate-700">
-                                <span className="font-bold text-slate-500 text-xs mr-2">人員:</span>
+                                <span className="font-bold text-slate-500 text-xs mr-2">{t('人員:', 'Recorder:')}</span>
                                 {record.recorderName}
                             </div>
 
                             {record.path && record.path.length > 0 && (
                                 <div className="mt-1 mb-1 bg-slate-50 p-2 rounded border border-slate-100">
                                   <div className="flex justify-between text-xs text-slate-500 mb-1">
-                                    <span className="font-bold flex items-center gap-1"><Navigation className="w-3 h-3" /> 軌跡距離</span>
-                                    <span>{record.distance?.toFixed(1) || 0} 公尺</span>
+                                    <span className="font-bold flex items-center gap-1"><Navigation className="w-3 h-3" /> {t('軌跡距離', 'Route distance')}</span>
+                                    <span>{record.distance?.toFixed(1) || 0} {t('公尺', 'm')}</span>
                                   </div>
                                   <PathPreview path={record.path} />
                                 </div>
@@ -256,16 +258,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ userId }) => {
                             )}
 
                             <div className="grid grid-cols-4 gap-2 text-center text-xs bg-slate-50 p-2 rounded mt-1">
-                                <div><div className="text-slate-400 mb-1">實際</div><div className="font-bold text-blue-600">{record.actualPickedCount}</div></div>
-                                <div><div className="text-slate-400 mb-1">快篩</div><div className="font-bold text-emerald-600">{record.screenedCount}</div></div>
-                                <div><div className="text-slate-400 mb-1">熱點</div><div className="font-bold text-orange-600">{record.hotspots?.length || 0}</div></div>
-                                <div><div className="text-slate-400 mb-1">照片</div><div className="font-bold text-slate-600">{record.images?.length || 0}</div></div>
+                                <div><div className="text-slate-400 mb-1">{t('實際', 'Picked')}</div><div className="font-bold text-blue-600">{record.actualPickedCount}</div></div>
+                                <div><div className="text-slate-400 mb-1">{t('快篩', 'Est.')}</div><div className="font-bold text-emerald-600">{record.screenedCount}</div></div>
+                                <div><div className="text-slate-400 mb-1">{t('熱點', 'Hotspots')}</div><div className="font-bold text-orange-600">{record.hotspots?.length || 0}</div></div>
+                                <div><div className="text-slate-400 mb-1">{t('照片', 'Photos')}</div><div className="font-bold text-slate-600">{record.images?.length || 0}</div></div>
                             </div>
                         </div>
                     ))}
 
                     {filteredSortedData.length === 0 && (
-                        <div className="text-center py-10 text-slate-400">目前沒有符合條件的資料</div>
+                        <div className="text-center py-10 text-slate-400">{t('目前沒有符合條件的資料', 'No matching records')}</div>
                     )}
                 </div>
             </div>

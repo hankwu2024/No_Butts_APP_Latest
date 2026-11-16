@@ -5,6 +5,7 @@ import { pb } from '../config/pocketbase';
 import { CITY_CODES } from '../constants';
 import type { ScreeningData } from '../types';
 import { parseCSV } from '../utils/helpers';
+import { useLang } from '../i18n';
 
 interface BackupToolsProps {
   records: ScreeningData[];
@@ -15,14 +16,15 @@ const BackupTools: React.FC<BackupToolsProps> = ({ records, userId }) => {
   const [processingState, setProcessingState] = useState<{ status: 'idle' | 'exporting' | 'importing', message: string, progress: number }>({ status: 'idle', message: '', progress: 0 });
   const [importConfirm, setImportConfirm] = useState<{show: boolean, file: File | null}>({show: false, file: null});
   const importInputRef = useRef<HTMLInputElement>(null);
+  const { t } = useLang();
 
   const handleExportZip = async () => {
     if (records.length === 0) {
-      alert("目前列表沒有資料可匯出");
+      alert(t('目前列表沒有資料可匯出', 'There are no records to export'));
       return;
     }
 
-    setProcessingState({ status: 'exporting', message: '正在打包資料與照片...', progress: 0 });
+    setProcessingState({ status: 'exporting', message: t('正在打包資料與照片...', 'Packing data and photos...'), progress: 0 });
 
     try {
       const zip = new JSZip();
@@ -87,7 +89,7 @@ const BackupTools: React.FC<BackupToolsProps> = ({ records, userId }) => {
       document.body.removeChild(link);
     } catch (e) {
       console.error("Export failed", e);
-      alert("匯出失敗，請稍後再試");
+      alert(t('匯出失敗，請稍後再試', 'Export failed. Please try again later.'));
     } finally {
       setProcessingState({ status: 'idle', message: '', progress: 0 });
     }
@@ -104,18 +106,18 @@ const BackupTools: React.FC<BackupToolsProps> = ({ records, userId }) => {
     const file = importConfirm.file;
     setImportConfirm({ show: false, file: null });
     if (!file) return;
-    setProcessingState({ status: 'importing', message: '讀取備份檔案中...', progress: 5 });
+    setProcessingState({ status: 'importing', message: t('讀取備份檔案中...', 'Reading backup file...'), progress: 5 });
 
     try {
       const zip = await JSZip.loadAsync(file);
       const csvFile = zip.file("data.csv");
-      if (!csvFile) throw new Error("找不到 data.csv，請確認匯入的是正確的備份檔。");
+      if (!csvFile) throw new Error(t('找不到 data.csv，請確認匯入的是正確的備份檔。', 'data.csv not found. Make sure this is a valid backup file.'));
 
       const csvText = await csvFile.async("string");
       const rows = parseCSV(csvText);
-      if (rows.length < 2) throw new Error("CSV 檔案內容為空或格式錯誤");
+      if (rows.length < 2) throw new Error(t('CSV 檔案內容為空或格式錯誤', 'The CSV file is empty or malformed'));
 
-      setProcessingState({ status: 'importing', message: '解析 CSV 與圖片...', progress: 10 });
+      setProcessingState({ status: 'importing', message: t('解析 CSV 與圖片...', 'Parsing CSV and images...'), progress: 10 });
       const dataRows = rows.slice(1);
       const newRecords: Partial<ScreeningData>[] = [];
       const totalRows = dataRows.length;
@@ -176,11 +178,11 @@ const BackupTools: React.FC<BackupToolsProps> = ({ records, userId }) => {
         setProcessingState(prev => ({
           ...prev,
           progress: 10 + Math.floor((i / totalRows) * 20),
-          message: `正在解析第 ${i + 1}/${totalRows} 筆資料...`
+          message: t(`正在解析第 ${i + 1}/${totalRows} 筆資料...`, `Parsing record ${i + 1}/${totalRows}...`)
         }));
       }
 
-      setProcessingState({ status: 'importing', message: '正在清除舊資料...', progress: 30 });
+      setProcessingState({ status: 'importing', message: t('正在清除舊資料...', 'Clearing old data...'), progress: 30 });
 
       const existing = await pb.collection('screenings').getFullList({ fields: 'id' });
       const totalExisting = existing.length;
@@ -189,11 +191,11 @@ const BackupTools: React.FC<BackupToolsProps> = ({ records, userId }) => {
         setProcessingState(prev => ({
           ...prev,
           progress: 30 + Math.floor(((i + 10) / totalExisting) * 20),
-          message: `正在刪除舊資料 (${Math.min(i + 10, totalExisting)}/${totalExisting})...`
+          message: t(`正在刪除舊資料 (${Math.min(i + 10, totalExisting)}/${totalExisting})...`, `Deleting old data (${Math.min(i + 10, totalExisting)}/${totalExisting})...`)
         }));
       }
 
-      setProcessingState({ status: 'importing', message: `準備寫入 ${newRecords.length} 筆新資料...`, progress: 50 });
+      setProcessingState({ status: 'importing', message: t(`準備寫入 ${newRecords.length} 筆新資料...`, `Preparing to write ${newRecords.length} records...`), progress: 50 });
 
       const totalNew = newRecords.length;
       for (let i = 0; i < totalNew; i += 10) {
@@ -201,15 +203,15 @@ const BackupTools: React.FC<BackupToolsProps> = ({ records, userId }) => {
         setProcessingState(prev => ({
           ...prev,
           progress: 50 + Math.floor(((i + 10) / totalNew) * 50),
-          message: `正在寫入新資料 (${Math.min(i + 10, totalNew)}/${totalNew})...`
+          message: t(`正在寫入新資料 (${Math.min(i + 10, totalNew)}/${totalNew})...`, `Writing new data (${Math.min(i + 10, totalNew)}/${totalNew})...`)
         }));
       }
 
       setProcessingState({ status: 'idle', message: '', progress: 100 });
-      alert(`匯入成功！已還原 ${newRecords.length} 筆資料。`);
+      alert(t(`匯入成功！已還原 ${newRecords.length} 筆資料。`, `Import complete! Restored ${newRecords.length} records.`));
     } catch (e) {
       console.error("Import failed", e);
-      alert("匯入失敗: " + (e as any).message);
+      alert(t('匯入失敗: ', 'Import failed: ') + (e as any).message);
     } finally {
       setProcessingState({ status: 'idle', message: '', progress: 0 });
     }
@@ -225,18 +227,18 @@ const BackupTools: React.FC<BackupToolsProps> = ({ records, userId }) => {
                  <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
                      <FileWarning className="w-6 h-6 text-red-600" />
                  </div>
-                 <h3 className="font-bold text-lg text-slate-800 mb-2">確認還原資料？</h3>
+                 <h3 className="font-bold text-lg text-slate-800 mb-2">{t('確認還原資料？', 'Restore from backup?')}</h3>
                  <p className="text-slate-600 text-sm mb-4 leading-relaxed">
-                    您選擇了檔案：<br/>
+                    {t('您選擇了檔案：', 'Selected file:')}<br/>
                     <span className="font-mono font-bold text-slate-800 bg-slate-100 px-1 rounded">{importConfirm.file?.name}</span>
                  </p>
                  <p className="text-red-500 text-sm font-bold mb-6 bg-red-50 p-3 rounded-lg border border-red-100">
-                    警告：此操作將「完全刪除」目前的雲端資料，並以備份檔的內容取代。此動作無法復原！
+                    {t('警告：此操作將「完全刪除」目前的雲端資料，並以備份檔的內容取代。此動作無法復原！', 'Warning: this will DELETE all current cloud data and replace it with the backup. This cannot be undone!')}
                  </p>
                  <div className="flex gap-3">
-                     <button onClick={() => setImportConfirm({show: false, file: null})} className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold hover:bg-slate-200 transition-colors">取消</button>
+                     <button onClick={() => setImportConfirm({show: false, file: null})} className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold hover:bg-slate-200 transition-colors">{t('取消', 'Cancel')}</button>
                      <button onClick={executeImport} className="flex-1 py-3 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 transition-colors flex items-center justify-center gap-2">
-                        <Check className="w-4 h-4" /> 確定匯入
+                        <Check className="w-4 h-4" /> {t('確定匯入', 'Import')}
                      </button>
                  </div>
              </div>
@@ -248,7 +250,7 @@ const BackupTools: React.FC<BackupToolsProps> = ({ records, userId }) => {
              <div className="bg-white p-6 rounded-2xl shadow-2xl flex flex-col items-center max-w-sm w-full">
                  <Loader2 className="w-10 h-10 text-emerald-600 animate-spin mb-4" />
                  <h3 className="font-bold text-lg text-slate-800 mb-2">
-                    {processingState.status === 'exporting' ? '匯出中' : '匯入中'}
+                    {processingState.status === 'exporting' ? t('匯出中', 'Exporting') : t('匯入中', 'Importing')}
                  </h3>
                  <p className="text-slate-500 text-sm text-center mb-4">{processingState.message}</p>
                  {processingState.status === 'importing' && (
@@ -266,15 +268,15 @@ const BackupTools: React.FC<BackupToolsProps> = ({ records, userId }) => {
       <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
         <div className="flex items-center justify-between gap-2">
           <div>
-            <h3 className="font-bold text-sm text-slate-700">資料備份</h3>
-            <p className="text-[10px] text-slate-400">匯出目前篩選結果；匯入會覆蓋全部資料</p>
+            <h3 className="font-bold text-sm text-slate-700">{t('資料備份', 'Backup')}</h3>
+            <p className="text-[10px] text-slate-400">{t('匯出目前篩選結果；匯入會覆蓋全部資料', 'Export the filtered list; importing replaces all data')}</p>
           </div>
           <div className="flex gap-2 shrink-0">
             <button onClick={() => importInputRef.current?.click()} disabled={processingState.status !== 'idle'} className="px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors border border-red-200 text-red-600 bg-red-50 hover:bg-red-100">
-                <FileUp className="w-4 h-4" /> 匯入 (ZIP)
+                <FileUp className="w-4 h-4" /> {t('匯入 (ZIP)', 'Import (ZIP)')}
             </button>
             <button onClick={handleExportZip} disabled={processingState.status !== 'idle'} className="px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors bg-slate-800 hover:bg-slate-700 text-white">
-                <FileArchive className="w-4 h-4" /> 匯出 (ZIP)
+                <FileArchive className="w-4 h-4" /> {t('匯出 (ZIP)', 'Export (ZIP)')}
             </button>
           </div>
         </div>

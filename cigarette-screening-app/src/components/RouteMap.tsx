@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import L from 'leaflet';
 import type { ScreeningData } from '../types';
 import { getSeverityColor, SEVERITY_LEGEND_STOPS } from '../utils/colorScale';
+import { useLang } from '../i18n';
 
 interface RouteMapProps {
   title: string;
@@ -13,7 +14,12 @@ interface RouteMapProps {
 const AGGREGATE_ZOOM_THRESHOLD = 14;
 const CLUSTER_CELL_PX = 64;
 
-const RouteMap: React.FC<RouteMapProps> = ({ title, data, valueField, unit = '根' }) => {
+const RouteMap: React.FC<RouteMapProps> = ({ title, data, valueField, unit: unitProp }) => {
+  const { t } = useLang();
+  const unit = unitProp ?? t('根', 'butts');
+  // 地圖在 effect 裡畫，用 ref 拿到當下的語言
+  const tRef = useRef(t);
+  useEffect(() => { tRef.current = t; }, [t]);
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const layerRef = useRef<L.LayerGroup | null>(null);
@@ -90,7 +96,10 @@ const RouteMap: React.FC<RouteMapProps> = ({ title, data, valueField, unit = '�
             fillColor: color,
             fillOpacity: 0.85,
           })
-            .bindTooltip(`區域平均：${avg.toFixed(0)} ${currentUnit}（${cell.count} 筆路線）`)
+            .bindTooltip(tRef.current(
+              `區域平均：${avg.toFixed(0)} ${currentUnit}（${cell.count} 筆路線）`,
+              `Area average: ${avg.toFixed(0)} ${currentUnit} (${cell.count} route${cell.count === 1 ? '' : 's'})`
+            ))
             .addTo(currentLayer);
         });
       }
@@ -121,30 +130,33 @@ const RouteMap: React.FC<RouteMapProps> = ({ title, data, valueField, unit = '�
       mapRef.current.fitBounds(L.latLngBounds(allPoints), { padding: [30, 30], maxZoom: 16 });
     }
     renderRef.current();
-  }, [routes, valueField, unit]);
+  }, [routes, valueField, unit, t]);
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
       <div className="p-3 border-b border-slate-100 flex items-center justify-between">
         <h4 className="font-bold text-sm text-slate-700">{title}</h4>
-        <span className="text-[10px] text-slate-400">{routes.length} 筆路線資料</span>
+        <span className="text-[10px] text-slate-400">{routes.length} {t('筆路線資料', routes.length === 1 ? 'route' : 'routes')}</span>
       </div>
       <div ref={containerRef} className="w-full h-64 relative z-0 isolate" />
       <div className="px-3 pt-2 flex items-center gap-2">
-        <span className="text-[10px] text-slate-400 shrink-0">少</span>
+        <span className="text-[10px] text-slate-400 shrink-0">{t('少', 'Few')}</span>
         <div
           className="flex-1 h-2 rounded-full"
           style={{ background: `linear-gradient(to right, ${SEVERITY_LEGEND_STOPS.map(v => getSeverityColor(v)).join(', ')})` }}
         />
-        <span className="text-[10px] text-slate-400 shrink-0">多</span>
+        <span className="text-[10px] text-slate-400 shrink-0">{t('多', 'Many')}</span>
       </div>
       <div className="px-3 pb-2 flex justify-between">
         {SEVERITY_LEGEND_STOPS.map(v => (
-          <span key={v} className="text-[9px] text-slate-400">{v}{unit}</span>
+          <span key={v} className="text-[9px] text-slate-400">{v}{t(unit, '')}</span>
         ))}
       </div>
       <p className="px-3 pb-3 text-[10px] text-slate-400 leading-relaxed">
-        縮小地圖會自動把鄰近路線合併成圓點（顏色＝平均數量、大小＝路線筆數）；滑鼠移到路線或色塊上可看到詳細數字。
+        {t(
+          '縮小地圖會自動把鄰近路線合併成圓點（顏色＝平均數量、大小＝路線筆數）；滑鼠移到路線或色塊上可看到詳細數字。',
+          'Zoom out and nearby routes merge into circles (color = average count, size = number of routes). Hover over a route or circle for details.'
+        )}
       </p>
     </div>
   );

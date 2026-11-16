@@ -1,4 +1,5 @@
 import React, { useEffect, useId, useRef, useState } from 'react';
+import { useLang } from '../i18n';
 
 interface Tower101ProgressProps {
   total: number;
@@ -26,6 +27,7 @@ const TowerShape: React.FC = () => (
 );
 
 const Tower101Progress: React.FC<Tower101ProgressProps> = ({ total }) => {
+  const { t } = useLang();
   const [shown, setShown] = useState(0);
   const shownRef = useRef(0);
   const clipId = useId();
@@ -55,7 +57,7 @@ const Tower101Progress: React.FC<Tower101ProgressProps> = ({ total }) => {
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-4 flex gap-4 items-end">
-      <svg viewBox="0 0 100 300" className="w-20 h-60 shrink-0" role="img" aria-label={`台北 101 已填滿 ${(ratio * 100).toFixed(1)}%`}>
+      <svg viewBox="0 0 100 300" className="w-20 h-60 shrink-0" role="img" aria-label={t(`台北 101 已填滿 ${(ratio * 100).toFixed(1)}%`, `Taipei 101 is ${(ratio * 100).toFixed(1)}% full`)}>
         <defs>
           <clipPath id={clipId}>
             <rect x="0" y={300 - fillHeight} width="100" height={fillHeight} />
@@ -70,21 +72,21 @@ const Tower101Progress: React.FC<Tower101ProgressProps> = ({ total }) => {
       </svg>
 
       <div className="flex-1 min-w-0 pb-1">
-        <p className="text-xs text-slate-500 font-bold mb-1">菸蒂直立疊起來有多高？</p>
-        <p className="inline-block text-lg font-extrabold text-white bg-emerald-600 rounded-lg px-3 py-0.5 mb-2 tabular-nums" aria-label={`相當於 ${multiple.toFixed(2)} 棟台北 101`}>
+        <p className="text-xs text-slate-500 font-bold mb-1">{t('菸蒂直立疊起來有多高？', 'How tall would the butts be, stacked upright?')}</p>
+        <p className="inline-block text-lg font-extrabold text-white bg-emerald-600 rounded-lg px-3 py-0.5 mb-2 tabular-nums" aria-label={t(`相當於 ${multiple.toFixed(2)} 棟台北 101`, `Equal to ${multiple.toFixed(2)} Taipei 101 towers`)}>
           101 × {multiple.toFixed(2)}
         </p>
         <p className="text-3xl font-bold text-emerald-600 leading-tight tabular-nums">
           {shown.toLocaleString()}
-          <span className="text-sm text-slate-500 font-medium ml-1">根</span>
+          <span className="text-sm text-slate-500 font-medium ml-1">{t('根', 'butts')}</span>
         </p>
         <p className="text-sm text-slate-600 mb-3 tabular-nums">
-          約 {heightMeters.toLocaleString(undefined, { maximumFractionDigits: 0 })} 公尺高
+          {t('約', 'About')} {heightMeters.toLocaleString(undefined, { maximumFractionDigits: 0 })} {t('公尺高', 'm tall')}
         </p>
 
         {completed > 0 && (
           <p className="text-xs font-bold text-emerald-700 bg-emerald-50 rounded-md px-2 py-1 mb-2 inline-block">
-            已疊滿 {completed} 棟 101！正在疊第 {completed + 1} 棟
+            {t(`已疊滿 ${completed} 棟 101！正在疊第 ${completed + 1} 棟`, `${completed} full 101 tower${completed === 1 ? '' : 's'}! Now building #${completed + 1}`)}
           </p>
         )}
 
@@ -92,10 +94,13 @@ const Tower101Progress: React.FC<Tower101ProgressProps> = ({ total }) => {
           <div className="bg-emerald-500 h-2 rounded-full" style={{ width: `${ratio * 100}%` }} />
         </div>
         <p className="text-xs text-slate-500 tabular-nums">
-          {completed > 0 ? `第 ${completed + 1} 棟` : '台北 101'} 完成 <b className="text-emerald-600">{(ratio * 100).toFixed(1)}%</b>
+          {completed > 0 ? t(`第 ${completed + 1} 棟`, `Tower #${completed + 1}`) : t('台北 101', 'Taipei 101')} {t('完成', 'complete:')} <b className="text-emerald-600">{(ratio * 100).toFixed(1)}%</b>
         </p>
         <p className="text-[10px] text-slate-400 mt-2 leading-relaxed">
-          以每根菸蒂 {BUTT_LENGTH_CM} 公分直立堆疊計算，疊滿一棟 101（508 公尺）需 {BUTTS_PER_TOWER.toLocaleString()} 根。統計全部實際撿拾數量，不受篩選影響。
+          {t(
+            `以每根菸蒂 ${BUTT_LENGTH_CM} 公分直立堆疊計算，疊滿一棟 101（508 公尺）需 ${BUTTS_PER_TOWER.toLocaleString()} 根。統計全部實際撿拾數量，不受篩選影響。`,
+            `Each butt stands ${BUTT_LENGTH_CM} cm tall, so one Taipei 101 (508 m) takes ${BUTTS_PER_TOWER.toLocaleString()} butts. Counts every butt picked up, regardless of filters.`
+          )}
         </p>
       </div>
     </div>

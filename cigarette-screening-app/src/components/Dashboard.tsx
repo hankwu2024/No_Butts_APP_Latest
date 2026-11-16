@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { MapPin, BarChart3, AlertTriangle, Building2 } from 'lucide-react';
 import { pb } from '../config/pocketbase';
-import { CITY_CODES } from '../constants';
+import { cityName } from '../constants';
+import { useLang } from '../i18n';
 import type { ScreeningData, FilterState, SortState } from '../types';
 import FilterSortBar from './FilterSortBar';
 import RouteMap from './RouteMap';
 import Tower101Progress from './Tower101Progress';
 
 const Dashboard: React.FC = () => {
+  const { t, lang } = useLang();
   const [data, setData] = useState<ScreeningData[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -90,11 +92,11 @@ const Dashboard: React.FC = () => {
     const totalRecords = targetData.length;
     const cityCount: Record<string, number> = {};
     targetData.forEach(d => {
-      const name = CITY_CODES.find(c => c.code === d.cityCode)?.name || d.cityCode;
+      const name = cityName(d.cityCode, lang);
       cityCount[name] = (cityCount[name] || 0) + (d.actualPickedCount || 0);
     });
     return { totalActualPicked, totalScreenedEst, totalHotspots, totalRecords, cityCount };
-  }, [filteredSortedData]);
+  }, [filteredSortedData, lang]);
 
   // 101 進度看的是全部資料，篩選時大樓不會「掉下去」
   const grandTotalPicked = useMemo(
@@ -102,13 +104,13 @@ const Dashboard: React.FC = () => {
     [data]
   );
 
-  if (loading) return <div className="p-8 text-center text-slate-500">載入數據中...</div>;
+  if (loading) return <div className="p-8 text-center text-slate-500">{t('載入數據中...', 'Loading data...')}</div>;
 
   return (
     <div className="pb-20">
       <div className="bg-emerald-600 text-white p-6 rounded-b-3xl mb-6 shadow-lg">
-        <h2 className="text-xl font-bold mb-1">公部門決策儀表板</h2>
-        <p className="text-emerald-100 text-sm">環境部 / 衛生局 數據參考</p>
+        <h2 className="text-xl font-bold mb-1">{t('公部門決策儀表板', 'Public Decision Dashboard')}</h2>
+        <p className="text-emerald-100 text-sm">{t('環境部 / 衛生局 數據參考', 'Reference data for environment & health agencies')}</p>
       </div>
 
       <div className="px-4 mb-4">
@@ -123,21 +125,21 @@ const Dashboard: React.FC = () => {
       <div className="px-4 grid grid-cols-2 gap-4 mb-6">
         <div className="bg-white p-4 rounded-xl shadow-sm border border-emerald-100 flex flex-col items-center">
            <span className="text-3xl font-bold text-blue-600 mb-1">{stats.totalActualPicked}</span>
-           <span className="text-xs text-slate-500 font-bold">總實際撿拾 (根)</span>
+           <span className="text-xs text-slate-500 font-bold">{t('總實際撿拾 (根)', 'Total picked up')}</span>
         </div>
         <div className="bg-white p-4 rounded-xl shadow-sm border border-emerald-100 flex flex-col items-center">
            <span className="text-3xl font-bold text-emerald-600 mb-1">{stats.totalScreenedEst}</span>
-           <span className="text-xs text-slate-500 font-bold">總快篩估計 (根)</span>
+           <span className="text-xs text-slate-500 font-bold">{t('總快篩估計 (根)', 'Total estimated')}</span>
         </div>
         <div className="col-span-2 grid grid-cols-2 gap-4">
              <div className="bg-white p-3 rounded-xl border border-slate-100 flex flex-col items-center justify-center">
                  <span className="text-xl font-bold text-slate-700">{stats.totalRecords}</span>
-                 <span className="text-[10px] text-slate-400">總回報筆數</span>
+                 <span className="text-[10px] text-slate-400">{t('總回報筆數', 'Reports')}</span>
              </div>
              <div className="bg-gradient-to-r from-orange-50 to-red-50 p-3 rounded-xl border border-orange-100 flex items-center justify-between px-4">
                  <div className="flex flex-col">
                      <span className="text-xl font-bold text-orange-600">{stats.totalHotspots}</span>
-                     <span className="text-[10px] text-orange-800">熱點數 ({'>'}50根/m²)</span>
+                     <span className="text-[10px] text-orange-800">{t('熱點數', 'Hotspots')} ({'>'}50{t('根', '')}/m²)</span>
                  </div>
                  <AlertTriangle className="w-6 h-6 text-orange-300" />
              </div>
@@ -147,16 +149,16 @@ const Dashboard: React.FC = () => {
       <div className="px-4 mb-6 space-y-4">
         <h3 className="font-bold text-slate-700 flex items-center gap-2">
           <MapPin className="w-5 h-5 text-emerald-600" />
-          路線分佈地圖
+          {t('路線分佈地圖', 'Route map')}
         </h3>
-        <RouteMap title="快篩估計數量" data={filteredSortedData} valueField="screenedCount" />
-        <RouteMap title="實際撿拾數量" data={filteredSortedData} valueField="actualPickedCount" />
+        <RouteMap title={t('快篩估計數量', 'Estimated butts')} data={filteredSortedData} valueField="screenedCount" />
+        <RouteMap title={t('實際撿拾數量', 'Butts picked up')} data={filteredSortedData} valueField="actualPickedCount" />
       </div>
 
       <div className="px-4 mb-6">
         <h3 className="font-bold text-slate-700 mb-3 flex items-center gap-2">
           <BarChart3 className="w-5 h-5 text-emerald-600" />
-          各縣市實際撿拾量排名
+          {t('各縣市實際撿拾量排名', 'Butts picked up by city')}
         </h3>
         <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
            {Object.entries(stats.cityCount)
@@ -172,14 +174,14 @@ const Dashboard: React.FC = () => {
                  <span className="font-mono text-emerald-600 font-bold">{count}</span>
                </div>
            ))}
-           {Object.keys(stats.cityCount).length === 0 && <div className="p-4 text-center text-sm text-slate-400">尚無數據 (或被篩選過濾)</div>}
+           {Object.keys(stats.cityCount).length === 0 && <div className="p-4 text-center text-sm text-slate-400">{t('尚無數據 (或被篩選過濾)', 'No data (or all filtered out)')}</div>}
         </div>
       </div>
 
       <div className="px-4">
         <h3 className="font-bold text-slate-700 mb-3 flex items-center gap-2">
           <Building2 className="w-5 h-5 text-emerald-600" />
-          菸蒂疊疊樂
+          {t('菸蒂疊疊樂', 'Butt Tower Challenge')}
         </h3>
         <Tower101Progress total={grandTotalPicked} />
       </div>

@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { pb } from '../config/pocketbase';
 import { CITY_CODES } from '../constants';
+import { useLang } from '../i18n';
 import type { Hotspot } from '../types';
 import { resizeImage, calcDistance } from '../utils/helpers';
 import CounterInput from './CounterInput';
@@ -43,7 +44,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-const InputText = ({ label, name, value, onChange, placeholder, required, onLocate }: any) => (
+const InputText = ({ label, name, value, onChange, placeholder, required, onLocate, locateTitle }: any) => (
   <div>
     <label className="block text-xs font-medium text-slate-500 mb-1">{label} {required && <span className="text-red-500">*</span>}</label>
     <div className="flex gap-2">
@@ -53,7 +54,7 @@ const InputText = ({ label, name, value, onChange, placeholder, required, onLoca
           type="button"
           onClick={onLocate}
           className="shrink-0 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 w-10 rounded-lg transition-colors flex items-center justify-center active:scale-95"
-          title="使用 GPS 定位"
+          title={locateTitle}
         >
           <MapPin className="w-5 h-5" />
         </button>
@@ -63,12 +64,16 @@ const InputText = ({ label, name, value, onChange, placeholder, required, onLoca
 );
 
 const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }) => {
+  const { t, lang } = useLang();
   const [loading, setLoading] = useState(false);
-  const [loadingText, setLoadingText] = useState("上傳中...");
+  const [loadingText, setLoadingText] = useState("");
   const [gpsLoading] = useState(false);
-  const [modal, setModal] = useState<{show: boolean, title: string, content: string}>({
+  const [modal, setModal] = useState<{show: boolean, title: string, content: string, success?: boolean}>({
     show: false, title: '', content: ''
   });
+  // 地圖在 effect 裡建立，用 ref 拿到當下的語言
+  const tRef = useRef(t);
+  useEffect(() => { tRef.current = t; }, [t]);
 
   const [isTracking, setIsTracking] = useState(false);
   const [path, setPath] = useState<{lat: number, lng: number, timestamp: number}[]>([]);
@@ -120,7 +125,7 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }
         setPreviewImages(prev => [...prev, ...processedImages]);
       } catch (err) {
         console.error("Image processing failed", err);
-        setModal({ show: true, title: "錯誤", content: "圖片處理失敗" });
+        setModal({ show: true, title: t('錯誤', 'Error'), content: t('圖片處理失敗', 'Image processing failed') });
       } finally {
         setLoading(false);
       }
@@ -180,7 +185,7 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }
           if (mapRef.current !== map) return;
           const { latitude, longitude } = pos.coords;
           map.setView([latitude, longitude], 17);
-          L.marker([latitude, longitude]).addTo(map).bindPopup('目前位置');
+          L.marker([latitude, longitude]).addTo(map).bindPopup(tRef.current('目前位置', 'You are here'));
         },
         (err) => console.error(err),
         { enableHighAccuracy: true }
@@ -248,7 +253,7 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }
       }
     } else {
       if (!navigator.geolocation) {
-        setModal({ show: true, title: "不支援", content: "您的裝置不支援 GPS 定位" });
+        setModal({ show: true, title: t('不支援', 'Not supported'), content: t('您的裝置不支援 GPS 定位', "Your device doesn't support GPS") });
         return;
       }
       setIsTracking(true);
@@ -287,32 +292,32 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }
     e.preventDefault();
 
     if (isTracking) {
-      setModal({ show: true, title: "定位中", content: "請先按下「結束定位」再提交表單。" });
+      setModal({ show: true, title: t('定位中', 'Still tracking'), content: t('請先按下「結束定位」再提交表單。', 'Tap "Stop tracking" before submitting.') });
       return;
     }
 
     const missingFields: string[] = [];
-    if (!formData.recorderName) missingFields.push("紀錄人員");
-    if (!formData.startAddress) missingFields.push("起點地址");
-    if (!formData.endAddress) missingFields.push("終點地址");
-    if (!formData.method) missingFields.push("移動方式");
-    if (!formData.roadType) missingFields.push("路段型態");
+    if (!formData.recorderName) missingFields.push(t('紀錄人員', 'Recorder'));
+    if (!formData.startAddress) missingFields.push(t('起點地址', 'Start point'));
+    if (!formData.endAddress) missingFields.push(t('終點地址', 'End point'));
+    if (!formData.method) missingFields.push(t('移動方式', 'Travel mode'));
+    if (!formData.roadType) missingFields.push(t('路段型態', 'Road type'));
 
     if (missingFields.length > 0) {
       setModal({
         show: true,
-        title: "缺少必填欄位",
-        content: `您還有以下必填欄位尚未填寫：\n\n${missingFields.map(f => `• ${f}`).join('\n')}`
+        title: t('缺少必填欄位', 'Missing required fields'),
+        content: `${t('您還有以下必填欄位尚未填寫：', 'Please fill in:')}\n\n${missingFields.map(f => `• ${f}`).join('\n')}`
       });
       return;
     }
 
     setLoading(true);
-    setLoadingText("準備資料中...");
+    setLoadingText(t('準備資料中...', 'Preparing data...'));
     try {
       const recordId = await generateRecordId();
 
-      setLoadingText("儲存紀錄中...");
+      setLoadingText(t('儲存紀錄中...', 'Saving record...'));
 
       const payload = {
         ...formData,
@@ -335,13 +340,17 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }
 
       setModal({
         show: true,
-        title: "上傳成功",
-        content: `案件編號：${recordId}\n(照片已記錄數量: ${previewImages.length} 張)`
+        success: true,
+        title: t('上傳成功', 'Uploaded'),
+        content: t(
+          `案件編號：${recordId}\n(照片已記錄數量: ${previewImages.length} 張)`,
+          `Record ID: ${recordId}\n(${previewImages.length} photo${previewImages.length === 1 ? '' : 's'} saved)`
+        )
       });
 
     } catch (err) {
       console.error(err);
-      setModal({ show: true, title: "上傳失敗", content: "請檢查網路或稍後再試。" });
+      setModal({ show: true, title: t('上傳失敗', 'Upload failed'), content: t('請檢查網路或稍後再試。', 'Check your connection and try again.') });
     } finally {
       setLoading(false);
     }
@@ -349,7 +358,7 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }
 
   const handleModalClose = () => {
     setModal(prev => ({ ...prev, show: false }));
-    if (modal.title === "上傳成功") {
+    if (modal.success) {
       onSubmitSuccess();
     }
   };
@@ -360,8 +369,8 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }
         <div className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
              <div className="bg-white p-6 rounded-2xl shadow-2xl flex flex-col items-center max-w-sm w-full">
                  <Loader2 className="w-10 h-10 text-emerald-600 animate-spin mb-4" />
-                 <h3 className="font-bold text-lg text-slate-800 mb-2">正在定位中...</h3>
-                 <p className="text-slate-500 text-sm">請稍候，正在獲取 GPS 座標</p>
+                 <h3 className="font-bold text-lg text-slate-800 mb-2">{t('正在定位中...', 'Locating...')}</h3>
+                 <p className="text-slate-500 text-sm">{t('請稍候，正在獲取 GPS 座標', 'Getting GPS coordinates, please wait')}</p>
              </div>
         </div>
       )}
@@ -378,7 +387,7 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }
                     onClick={handleModalClose}
                     className="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700 transition-colors"
                  >
-                    確定
+                    {t('確定', 'OK')}
                  </button>
              </div>
         </div>
@@ -390,60 +399,60 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }
       <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
         <h2 className="text-lg font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
            <ClipboardList className="w-5 h-5 text-emerald-600" />
-           基本資料
+           {t('基本資料', 'Basic info')}
         </h2>
 
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1">縣市代碼</label>
+            <label className="block text-xs font-medium text-slate-500 mb-1">{t('縣市代碼', 'City / County')}</label>
             <select name="cityCode" value={formData.cityCode} onChange={handleInputChange} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
               {CITY_CODES.map(c => (
-                <option key={c.code} value={c.code}>{c.code} - {c.name}</option>
+                <option key={c.code} value={c.code}>{c.code} - {lang === 'en' ? c.en : c.name}</option>
               ))}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1">日期</label>
+            <label className="block text-xs font-medium text-slate-500 mb-1">{t('日期', 'Date')}</label>
             <input type="date" name="date" value={formData.date} onChange={handleInputChange} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-mono" />
           </div>
         </div>
 
         <div className="space-y-3">
-          <InputText label="紀錄人員" name="recorderName" value={formData.recorderName} onChange={handleInputChange} required />
-          <InputText label="快篩人員" name="screenerName" value={formData.screenerName} onChange={handleInputChange} />
-          <InputText label="拍照人員" name="photographerName" value={formData.photographerName} onChange={handleInputChange} />
+          <InputText label={t('紀錄人員', 'Recorder')} name="recorderName" value={formData.recorderName} onChange={handleInputChange} required />
+          <InputText label={t('快篩人員', 'Screener')} name="screenerName" value={formData.screenerName} onChange={handleInputChange} />
+          <InputText label={t('拍照人員', 'Photographer')} name="photographerName" value={formData.photographerName} onChange={handleInputChange} />
         </div>
       </div>
 
       <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
         <h2 className="text-lg font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
            <Footprints className="w-5 h-5 text-emerald-600" />
-           快篩方式與型態
+           {t('快篩方式與型態', 'Method & road type')}
         </h2>
 
-        <label className="block text-xs font-medium text-slate-500 mb-2">移動方式 <span className="text-red-500">*</span></label>
+        <label className="block text-xs font-medium text-slate-500 mb-2">{t('移動方式', 'Travel mode')} <span className="text-red-500">*</span></label>
         <div className="grid grid-cols-3 gap-2 mb-6">
-          <SelectionCard selected={formData.method === 'walk'} onClick={() => setFormData(prev => ({...prev, method: 'walk'}))} title="步行" icon={<Footprints className="w-5 h-5" />} />
-          <SelectionCard selected={formData.method === 'bike'} onClick={() => setFormData(prev => ({...prev, method: 'bike'}))} title="單車" icon={<Bike className="w-5 h-5" />} />
-          <SelectionCard selected={formData.method === 'motor'} onClick={() => setFormData(prev => ({...prev, method: 'motor'}))} title="機動車" icon={<Car className="w-5 h-5" />} />
+          <SelectionCard selected={formData.method === 'walk'} onClick={() => setFormData(prev => ({...prev, method: 'walk'}))} title={t('步行', 'Walk')} icon={<Footprints className="w-5 h-5" />} />
+          <SelectionCard selected={formData.method === 'bike'} onClick={() => setFormData(prev => ({...prev, method: 'bike'}))} title={t('單車', 'Bike')} icon={<Bike className="w-5 h-5" />} />
+          <SelectionCard selected={formData.method === 'motor'} onClick={() => setFormData(prev => ({...prev, method: 'motor'}))} title={t('機動車', 'Vehicle')} icon={<Car className="w-5 h-5" />} />
         </div>
 
-        <label className="block text-xs font-medium text-slate-500 mb-2">路段型態 <span className="text-red-500">*</span></label>
+        <label className="block text-xs font-medium text-slate-500 mb-2">{t('路段型態', 'Road type')} <span className="text-red-500">*</span></label>
         <div className="grid grid-cols-3 gap-2">
-          <SelectionCard smallText selected={formData.roadType === 'complex'} onClick={() => setFormData(prev => ({...prev, roadType: 'complex'}))} title="複雜" subtitle="(人行+花圃)" />
-          <SelectionCard smallText selected={formData.roadType === 'normal'} onClick={() => setFormData(prev => ({...prev, roadType: 'normal'}))} title="普通" subtitle="(人行)" />
-          <SelectionCard smallText selected={formData.roadType === 'road_only'} onClick={() => setFormData(prev => ({...prev, roadType: 'road_only'}))} title="純馬路" />
+          <SelectionCard smallText selected={formData.roadType === 'complex'} onClick={() => setFormData(prev => ({...prev, roadType: 'complex'}))} title={t('複雜', 'Complex')} subtitle={t('(人行+花圃)', '(sidewalk + planters)')} />
+          <SelectionCard smallText selected={formData.roadType === 'normal'} onClick={() => setFormData(prev => ({...prev, roadType: 'normal'}))} title={t('普通', 'Normal')} subtitle={t('(人行)', '(sidewalk)')} />
+          <SelectionCard smallText selected={formData.roadType === 'road_only'} onClick={() => setFormData(prev => ({...prev, roadType: 'road_only'}))} title={t('純馬路', 'Road only')} />
         </div>
       </div>
 
       <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
         <h2 className="text-lg font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
            <MapPin className="w-5 h-5 text-emerald-600" />
-           快篩地點與方向
+           {t('快篩地點與方向', 'Location & direction')}
         </h2>
 
         <div className="mb-4">
-          <label className="block text-xs font-medium text-slate-500 mb-2">軌跡定位 <span className="text-red-500">*</span></label>
+          <label className="block text-xs font-medium text-slate-500 mb-2">{t('軌跡定位', 'Route tracking')} <span className="text-red-500">*</span></label>
           <div className="flex flex-col gap-3">
              <button
                type="button"
@@ -451,16 +460,16 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }
                className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${isTracking ? 'bg-red-100 text-red-600 border border-red-200 animate-pulse' : 'bg-emerald-100 text-emerald-700 border border-emerald-200'}`}
              >
                {isTracking ? (
-                 <><Square className="w-5 h-5" fill="currentColor" /> 結束定位</>
+                 <><Square className="w-5 h-5" fill="currentColor" /> {t('結束定位', 'Stop tracking')}</>
                ) : (
-                 <><Play className="w-5 h-5" fill="currentColor" /> 開始定位</>
+                 <><Play className="w-5 h-5" fill="currentColor" /> {t('開始定位', 'Start tracking')}</>
                )}
              </button>
 
              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
                 <div className="flex justify-between items-center text-sm font-bold text-slate-700 mb-2 border-b border-slate-200 pb-2">
-                   <span>已紀錄點數：<span className="text-emerald-600">{path.length}</span></span>
-                   <span>總距離：<span className="text-blue-600">{distance.toFixed(1)}</span> 公尺</span>
+                   <span>{t('已紀錄點數：', 'Points: ')}<span className="text-emerald-600">{path.length}</span></span>
+                   <span>{t('總距離：', 'Distance: ')}<span className="text-blue-600">{distance.toFixed(1)}</span> {t('公尺', 'm')}</span>
                 </div>
 
                 <div
@@ -469,40 +478,40 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }
                 />
 
                 <div className="text-xs text-slate-500 flex justify-between">
-                   <span>起點: {path.length > 0 ? "已記錄" : "尚未開始"}</span>
-                   <span>終點: {path.length > 1 && !isTracking ? "已記錄" : (isTracking ? "定位中..." : "尚未開始")}</span>
+                   <span>{t('起點', 'Start')}: {path.length > 0 ? t('已記錄', 'Recorded') : t('尚未開始', 'Not started')}</span>
+                   <span>{t('終點', 'End')}: {path.length > 1 && !isTracking ? t('已記錄', 'Recorded') : (isTracking ? t('定位中...', 'Tracking...') : t('尚未開始', 'Not started'))}</span>
                 </div>
              </div>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <SelectionCard selected={formData.direction === 'right'} onClick={() => setFormData(prev => ({...prev, direction: 'right'}))} title="右向 (順向)" icon={<ArrowRight className="w-6 h-6" />} />
-          <SelectionCard selected={formData.direction === 'left'} onClick={() => setFormData(prev => ({...prev, direction: 'left'}))} title="左向 (逆向)" icon={<ArrowLeft className="w-6 h-6" />} />
+          <SelectionCard selected={formData.direction === 'right'} onClick={() => setFormData(prev => ({...prev, direction: 'right'}))} title={t('右向 (順向)', 'Right side (with traffic)')} icon={<ArrowRight className="w-6 h-6" />} />
+          <SelectionCard selected={formData.direction === 'left'} onClick={() => setFormData(prev => ({...prev, direction: 'left'}))} title={t('左向 (逆向)', 'Left side (against traffic)')} icon={<ArrowLeft className="w-6 h-6" />} />
         </div>
       </div>
 
       <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
         <h2 className="text-lg font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
            <Trash2 className="w-5 h-5 text-emerald-600" />
-           數據統計
+           {t('數據統計', 'Counts')}
         </h2>
 
         <div className="grid grid-cols-1 gap-6 mb-6">
-          <CounterInput label="1. 快篩估計數量" value={formData.screenedCount} onChange={(v) => setFormData(prev => ({...prev, screenedCount: v}))} colorClass="text-emerald-600" btnClass="bg-emerald-100 text-emerald-700 hover:bg-emerald-200" />
-          <CounterInput label="2. 水溝蓋數量" value={formData.drainCount} onChange={(v) => setFormData(prev => ({...prev, drainCount: v}))} colorClass="text-slate-700" bgClass="bg-slate-50" btnClass="bg-slate-200 text-slate-700 hover:bg-slate-300" />
-          <CounterInput label="3. 菸盒數量" value={formData.boxCount} onChange={(v) => setFormData(prev => ({...prev, boxCount: v}))} colorClass="text-slate-700" bgClass="bg-slate-50" btnClass="bg-slate-200 text-slate-700 hover:bg-slate-300" />
-          <CounterInput label="4. 實際撿拾數量" value={formData.actualPickedCount} onChange={(v) => setFormData(prev => ({...prev, actualPickedCount: v}))} colorClass="text-blue-600" bgClass="bg-blue-50" btnClass="bg-blue-100 text-blue-700 hover:bg-blue-200" />
+          <CounterInput label={t('1. 快篩估計數量', '1. Estimated butts')} value={formData.screenedCount} onChange={(v) => setFormData(prev => ({...prev, screenedCount: v}))} colorClass="text-emerald-600" btnClass="bg-emerald-100 text-emerald-700 hover:bg-emerald-200" />
+          <CounterInput label={t('2. 水溝蓋數量', '2. Drain covers')} value={formData.drainCount} onChange={(v) => setFormData(prev => ({...prev, drainCount: v}))} colorClass="text-slate-700" bgClass="bg-slate-50" btnClass="bg-slate-200 text-slate-700 hover:bg-slate-300" />
+          <CounterInput label={t('3. 菸盒數量', '3. Cigarette packs')} value={formData.boxCount} onChange={(v) => setFormData(prev => ({...prev, boxCount: v}))} colorClass="text-slate-700" bgClass="bg-slate-50" btnClass="bg-slate-200 text-slate-700 hover:bg-slate-300" />
+          <CounterInput label={t('4. 實際撿拾數量', '4. Butts picked up')} value={formData.actualPickedCount} onChange={(v) => setFormData(prev => ({...prev, actualPickedCount: v}))} colorClass="text-blue-600" bgClass="bg-blue-50" btnClass="bg-blue-100 text-blue-700 hover:bg-blue-200" />
         </div>
 
-        <textarea name="note" value={formData.note} onChange={handleInputChange} placeholder="備註 (拍照紀錄或其他說明)..." className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none h-20 mb-4" />
+        <textarea name="note" value={formData.note} onChange={handleInputChange} placeholder={t('備註 (拍照紀錄或其他說明)...', 'Notes (photos or other details)...')} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none h-20 mb-4" />
 
         <div className="grid grid-cols-2 gap-3 mb-4">
           <button type="button" onClick={() => cameraInputRef.current?.click()} className="flex items-center justify-center gap-2 p-3 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-lg font-bold text-sm hover:bg-emerald-100 active:scale-95 transition-all shadow-sm">
-            <Camera className="w-5 h-5" /> 開啟相機
+            <Camera className="w-5 h-5" /> {t('開啟相機', 'Camera')}
           </button>
           <button type="button" onClick={() => galleryInputRef.current?.click()} className="flex items-center justify-center gap-2 p-3 bg-slate-100 text-slate-600 border border-slate-200 rounded-lg font-bold text-sm hover:bg-slate-200 active:scale-95 transition-all shadow-sm">
-            <ImageIcon className="w-5 h-5" /> 上傳圖片
+            <ImageIcon className="w-5 h-5" /> {t('上傳圖片', 'Upload photos')}
           </button>
         </div>
 
@@ -523,24 +532,24 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }
       <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 border-l-4 border-l-orange-500">
         <h2 className="text-lg font-bold text-slate-800 mb-2 flex items-center gap-2">
            <AlertTriangle className="w-5 h-5 text-orange-500" />
-           菸蒂熱點通報
+           {t('菸蒂熱點通報', 'Report a hotspot')}
         </h2>
-        <p className="text-xs text-orange-600 mb-4 bg-orange-50 p-2 rounded">定義：1平方公尺超過 50 根菸蒂</p>
+        <p className="text-xs text-orange-600 mb-4 bg-orange-50 p-2 rounded">{t('定義：1平方公尺超過 50 根菸蒂', 'Hotspot = more than 50 butts in 1 m²')}</p>
 
         {hotspots.map((hotspot, idx) => (
           <div key={hotspot.id} className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200 relative">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-bold text-slate-700 bg-orange-100 text-orange-800 px-2 py-0.5 rounded">熱點 #{idx + 1}</span>
+              <span className="text-sm font-bold text-slate-700 bg-orange-100 text-orange-800 px-2 py-0.5 rounded">{t('熱點', 'Hotspot')} #{idx + 1}</span>
               {hotspots.length > 0 && <button type="button" onClick={() => removeHotspot(idx)} className="text-red-400 hover:text-red-600 p-1"><X className="w-4 h-4" /></button>}
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-slate-500 mb-1 block">熱點地址/位置</label>
-                <input type="text" placeholder="請輸入地址或描述" value={hotspot.address} onChange={(e) => updateHotspot(idx, 'address', e.target.value)} className="w-full p-2 bg-white border border-slate-200 rounded text-sm" />
+                <label className="text-xs text-slate-500 mb-1 block">{t('熱點地址/位置', 'Address / location')}</label>
+                <input type="text" placeholder={t('請輸入地址或描述', 'Enter an address or description')} value={hotspot.address} onChange={(e) => updateHotspot(idx, 'address', e.target.value)} className="w-full p-2 bg-white border border-slate-200 rounded text-sm" />
               </div>
               <div className="flex gap-4 items-center bg-white p-2 rounded border border-slate-200">
-                 <label className="text-xs font-bold text-slate-600 shrink-0">此熱點菸蒂數:</label>
+                 <label className="text-xs font-bold text-slate-600 shrink-0">{t('此熱點菸蒂數:', 'Butts here:')}</label>
                  <div className="flex items-center gap-2 flex-1 justify-end">
                     <button type="button" onClick={() => updateHotspot(idx, 'count', Math.max(0, hotspot.count - 1))} className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600"><Minus className="w-4 h-4"/></button>
                     <input type="number" value={hotspot.count} min="0" onChange={(e) => updateHotspot(idx, 'count', Math.max(0, parseInt(e.target.value) || 0))} className="w-16 text-center font-bold text-orange-600 outline-none" />
@@ -548,21 +557,21 @@ const ScreeningForm: React.FC<ScreeningFormProps> = ({ userId, onSubmitSuccess }
                  </div>
               </div>
               <div>
-                <label className="text-xs text-slate-500 mb-1 block">備註</label>
-                <input type="text" placeholder="熱點相關備註..." value={hotspot.note} onChange={(e) => updateHotspot(idx, 'note', e.target.value)} className="w-full p-2 bg-white border border-slate-200 rounded text-sm" />
+                <label className="text-xs text-slate-500 mb-1 block">{t('備註', 'Notes')}</label>
+                <input type="text" placeholder={t('熱點相關備註...', 'Notes about this hotspot...')} value={hotspot.note} onChange={(e) => updateHotspot(idx, 'note', e.target.value)} className="w-full p-2 bg-white border border-slate-200 rounded text-sm" />
               </div>
             </div>
           </div>
         ))}
 
         <button type="button" onClick={addHotspot} className="w-full py-3 border-2 border-dashed border-slate-300 text-slate-500 rounded-lg flex items-center justify-center gap-2 hover:bg-slate-50 hover:border-slate-400 transition-colors font-bold">
-          <Plus className="w-5 h-5" /> 新增熱點
+          <Plus className="w-5 h-5" /> {t('新增熱點', 'Add hotspot')}
         </button>
       </div>
 
       <div className="mt-6 mb-8 px-1">
         <button type="submit" disabled={loading} className={`w-full py-3.5 rounded-xl font-bold text-white shadow-lg flex items-center justify-center gap-2 transition-all ${loading ? 'bg-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700 active:scale-95'}`}>
-          {loading ? <><Loader2 className="w-5 h-5 animate-spin" /> {loadingText}</> : <><Save className="w-5 h-5" /> 提交資料</>}
+          {loading ? <><Loader2 className="w-5 h-5 animate-spin" /> {loadingText || t('上傳中...', 'Uploading...')}</> : <><Save className="w-5 h-5" /> {t('提交資料', 'Submit')}</>}
         </button>
       </div>
     </form>
