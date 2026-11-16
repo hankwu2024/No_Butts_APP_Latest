@@ -31,3 +31,28 @@ export const getSeverityColor = (value: number): string => {
 };
 
 export const SEVERITY_LEGEND_STOPS = [0, 100, 200, 350, 500];
+
+// ---- 新舊程度（單一綠色，越深＝越近期）----
+const RECENT_RGB: RGB = [4, 120, 87];   // emerald-700
+const OLD_RGB: RGB = [187, 230, 210];   // 淡綠，舊資料退到背景
+const RECENCY_MAX_DAYS = 90;
+
+/** 距今幾天；日期格式錯誤時當成很久以前 */
+export const daysAgo = (date: string): number => {
+  const d = new Date(`${date}T00:00:00`);
+  if (isNaN(d.getTime())) return RECENCY_MAX_DAYS;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return Math.max(0, Math.round((today.getTime() - d.getTime()) / 86400000));
+};
+
+export const getRecencyColor = (days: number): string => {
+  const t = Math.min(Math.max(days, 0), RECENCY_MAX_DAYS) / RECENCY_MAX_DAYS;
+  return toHex([
+    RECENT_RGB[0] + (OLD_RGB[0] - RECENT_RGB[0]) * t,
+    RECENT_RGB[1] + (OLD_RGB[1] - RECENT_RGB[1]) * t,
+    RECENT_RGB[2] + (OLD_RGB[2] - RECENT_RGB[2]) * t,
+  ]);
+};
+
+export const RECENCY_LEGEND_DAYS = [0, 7, 30, 60, 90];
