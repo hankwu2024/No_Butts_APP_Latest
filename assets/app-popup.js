@@ -8,6 +8,12 @@
   };
   var modal, frame, lastFocus;
 
+  // 帶上網站目前的語言（日文版先用英文），並加時間參數避免瀏覽器拿快取的舊版 APP
+  function appUrl(noCache) {
+    var lang = window.currentLang === 'zh' ? 'zh' : 'en';
+    return APP_URL + '?lang=' + lang + (noCache ? '&t=' + Date.now() : '');
+  }
+
   function label(k) {
     var l = LABELS[window.currentLang] || LABELS.zh;
     return l[k];
@@ -47,8 +53,13 @@
     var btn = modal.querySelector('.app-popup-close');
     btn.setAttribute('aria-label', label('close'));
     frame.title = label('title');
-    // 第一次打開才載入，之後關掉再開會保留原本的畫面
-    if (!frame.getAttribute('src')) frame.src = APP_URL;
+    modal.querySelector('.app-popup-newtab').setAttribute('href', appUrl(false));
+    // 第一次打開（或網站換了語言）才重新載入，否則關掉再開會保留原本的畫面
+    var lang = window.currentLang === 'zh' ? 'zh' : 'en';
+    if (!frame.getAttribute('src') || frame.getAttribute('data-lang') !== lang) {
+      frame.setAttribute('data-lang', lang);
+      frame.src = appUrl(true);
+    }
     modal.hidden = false;
     document.body.style.overflow = 'hidden';
     btn.focus();
