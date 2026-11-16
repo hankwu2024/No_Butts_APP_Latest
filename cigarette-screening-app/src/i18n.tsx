@@ -8,6 +8,16 @@ const STORAGE_KEY = 'screeningLang';
 const SITE_KEY = 'siteLang';
 
 const readInitialLang = (): Lang => {
+  // 從個人網站開啟時網址會帶 ?lang=，以網站當下的語言為準
+  const fromUrl = new URLSearchParams(window.location.search).get('lang');
+  if (fromUrl === 'zh' || fromUrl === 'en') {
+    try {
+      localStorage.setItem(STORAGE_KEY, fromUrl);
+    } catch {
+      // 存不了也沒關係，這次照網址的語言顯示
+    }
+    return fromUrl;
+  }
   try {
     const own = localStorage.getItem(STORAGE_KEY);
     if (own === 'zh' || own === 'en') return own;
