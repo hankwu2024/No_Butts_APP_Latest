@@ -1,6 +1,7 @@
 // 點「開啟 APP」時，不離開個人網站，改成跳出視窗開啟菸蒂快篩平台
 (function () {
-  var APP_URL = 'screening/index.html';
+  // 直接用資料夾網址：正式站會把 index.html 301 轉到 /screening/，並把 ?lang= 等參數丟掉
+  var APP_URL = 'screening/';
   var LABELS = {
     zh: { title: '菸蒂快篩平台', newTab: '在新分頁開啟 ↗', close: '關閉' },
     en: { title: 'Cigarette Butt Screening App', newTab: 'Open in new tab ↗', close: 'Close' },
