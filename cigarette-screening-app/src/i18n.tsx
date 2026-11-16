@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { Languages } from 'lucide-react';
 
 export type Lang = 'zh' | 'en';
 
@@ -58,16 +59,17 @@ export const useLang = () => useContext(LangContext);
 /** 中 / EN 切換按鈕 */
 export const LangToggle: React.FC<{ small?: boolean; className?: string }> = ({ small = false, className = '' }) => {
   const { lang, setLang } = useLang();
-  const size = small ? 'px-1.5 text-[10px] leading-4' : 'px-3 py-1.5 text-xs';
+  const size = small ? 'px-2 py-0.5 text-[11px]' : 'px-3 py-1.5 text-xs';
   return (
     <button
       type="button"
       onClick={() => setLang(lang === 'en' ? 'zh' : 'en')}
-      className={`${size} font-bold rounded-md border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-colors ${className}`}
+      className={`${size} inline-flex items-center gap-1 font-bold rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors ${className}`}
       title={lang === 'en' ? '切換成中文' : 'Switch to English'}
       aria-label={lang === 'en' ? '切換成中文' : 'Switch to English'}
     >
-      {lang === 'en' ? '中文' : 'EN'}
+      <Languages className={small ? 'w-3 h-3' : 'w-4 h-4'} />
+      {lang === 'en' ? '中文' : 'English'}
     </button>
   );
 };
