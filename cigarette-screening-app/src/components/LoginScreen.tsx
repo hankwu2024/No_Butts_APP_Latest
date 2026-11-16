@@ -75,12 +75,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
           </div>
         </div>
       )}
-      <div className={`w-28 h-28 rounded-full flex items-center justify-center mb-6 shadow-xl overflow-hidden p-4 ${imageError ? 'bg-emerald-600' : 'bg-white'}`}>
+      <div className={`w-28 h-28 rounded-full flex items-center justify-center mb-6 shadow-xl overflow-hidden ${imageError ? 'bg-emerald-600' : ''}`}>
         {!imageError ? (
           <img
             src={LOGO_URL}
             alt="Logo"
-            className="w-full h-full object-contain"
+            className="w-full h-full object-cover"
             onError={() => setImageError(true)}
           />
         ) : (

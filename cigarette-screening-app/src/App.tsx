@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ClipboardList } from 'lucide-react';
 import { getUserId } from './config/pocketbase';
-import { LOGO_URL } from './constants';
+import { LOGO_SMALL_URL } from './constants';
 import { useLang, LangToggle } from './i18n';
 import LoginScreen from './components/LoginScreen';
 import ScreeningForm from './components/ScreeningForm';
@@ -25,12 +25,12 @@ export default function App() {
       <div className="bg-white border-b border-slate-200 sticky top-0 z-20 px-4 pt-3 pb-2">
         <div className="flex items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-2 min-w-0">
-          <div className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center overflow-hidden border border-slate-100 shadow-sm ${imageError ? 'bg-emerald-600' : 'bg-white'}`}>
+          <div className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center overflow-hidden shadow-sm ${imageError ? 'bg-emerald-600' : ''}`}>
              {!imageError ? (
                <img
-                 src={LOGO_URL}
+                 src={LOGO_SMALL_URL}
                  alt="Logo"
-                 className="w-full h-full object-contain"
+                 className="w-full h-full object-cover"
                  onError={() => setImageError(true)}
                />
              ) : (

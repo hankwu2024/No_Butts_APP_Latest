@@ -31,5 +31,7 @@ export const cityName = (code: string, lang: 'zh' | 'en') => {
   return lang === 'en' ? c.en : c.name;
 };
 
-export const LOGO_URL = "/不落蒂大圖.jpg";
+// 用 BASE_URL 開頭，部署在 /screening/ 底下時路徑才不會錯
+export const LOGO_URL = `${import.meta.env.BASE_URL}app-icon.png`;
+export const LOGO_SMALL_URL = `${import.meta.env.BASE_URL}app-icon-192.png`;
 export const APP_ID = import.meta.env.VITE_APP_ID || 'default-app-id';
