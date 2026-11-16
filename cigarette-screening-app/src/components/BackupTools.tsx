@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { FileArchive, FileUp, Loader2, FileWarning, Check } from 'lucide-react';
 import JSZip from 'jszip';
 import { pb } from '../config/pocketbase';
-import { CITY_CODES } from '../constants';
+import { CITY_CODES, cityName as cityNameOf } from '../constants';
 import type { ScreeningData } from '../types';
 import { parseCSV } from '../utils/helpers';
 import { useLang } from '../i18n';
@@ -16,7 +16,7 @@ const BackupTools: React.FC<BackupToolsProps> = ({ records, userId }) => {
   const [processingState, setProcessingState] = useState<{ status: 'idle' | 'exporting' | 'importing', message: string, progress: number }>({ status: 'idle', message: '', progress: 0 });
   const [importConfirm, setImportConfirm] = useState<{show: boolean, file: File | null}>({show: false, file: null});
   const importInputRef = useRef<HTMLInputElement>(null);
-  const { t } = useLang();
+  const { t, lang } = useLang();
 
   const handleExportZip = async () => {
     if (records.length === 0) {
@@ -30,18 +30,32 @@ const BackupTools: React.FC<BackupToolsProps> = ({ records, userId }) => {
       const zip = new JSZip();
       const imgFolder = zip.folder("images");
 
-      const headers = [
-        "案件編號", "日期", "縣市", "紀錄人員", "快篩人員",
-        "起點地址", "終點地址", "方向",
-        "快篩估計數量", "實際撿拾數量", "菸盒數量", "水溝蓋數量",
-        "熱點數量", "照片數量", "備註", "移動方式", "路段型態", "照片檔名"
-      ];
+      // 依目前語言匯出；欄位順序固定，匯入時靠位置讀，所以中英文檔案都能匯回來
+      const headers = lang === 'en'
+        ? [
+            "Record ID", "Date", "City/County", "Recorder", "Screener",
+            "Start point", "End point", "Direction",
+            "Estimated butts", "Butts picked up", "Cigarette packs", "Drain covers",
+            "Hotspots", "Photos", "Notes", "Travel mode", "Road type", "Photo files"
+          ]
+        : [
+            "案件編號", "日期", "縣市", "紀錄人員", "快篩人員",
+            "起點地址", "終點地址", "方向",
+            "快篩估計數量", "實際撿拾數量", "菸盒數量", "水溝蓋數量",
+            "熱點數量", "照片數量", "備註", "移動方式", "路段型態", "照片檔名"
+          ];
 
       const rows = await Promise.all(records.map(async (item) => {
-        const cityName = CITY_CODES.find(c => c.code === item.cityCode)?.name || item.cityCode;
-        const directionStr = item.direction === 'right' ? '右向(順向)' : '左向(逆向)';
-        const methodMap: Record<string, string> = { walk: '步行', bike: '單車', motor: '機動車' };
-        const roadMap: Record<string, string> = { complex: '複雜', normal: '普通', road_only: '純馬路' };
+        const cityName = cityNameOf(item.cityCode, lang);
+        const directionStr = item.direction === 'right'
+          ? t('右向(順向)', 'Right (with traffic)')
+          : t('左向(逆向)', 'Left (against traffic)');
+        const methodMap: Record<string, string> = lang === 'en'
+          ? { walk: 'Walk', bike: 'Bike', motor: 'Vehicle' }
+          : { walk: '步行', bike: '單車', motor: '機動車' };
+        const roadMap: Record<string, string> = lang === 'en'
+          ? { complex: 'Complex', normal: 'Normal', road_only: 'Road only' }
+          : { complex: '複雜', normal: '普通', road_only: '純馬路' };
 
         const localImages: string[] = [];
         let imageCellContent = "";
@@ -83,7 +97,7 @@ const BackupTools: React.FC<BackupToolsProps> = ({ records, userId }) => {
       const url = URL.createObjectURL(content);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `菸蒂快篩資料包_${new Date().toISOString().slice(0,10)}.zip`);
+      link.setAttribute("download", `${t('菸蒂快篩資料包', 'butt-screening-backup')}_${new Date().toISOString().slice(0,10)}.zip`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -126,14 +140,19 @@ const BackupTools: React.FC<BackupToolsProps> = ({ records, userId }) => {
         const cols = dataRows[i];
         if (cols.length < 5) continue;
 
-        const cityName = cols[2];
-        const cityCode = CITY_CODES.find(c => c.name === cityName || c.code === cityName)?.code || 'G';
-        const dirStr = cols[7] || '';
-        const direction = dirStr.includes('左') ? 'left' : 'right';
-        const methodStr = cols[15] || '';
-        const method = methodStr === '單車' ? 'bike' : methodStr === '機動車' ? 'motor' : 'walk';
-        const roadStr = cols[16] || '';
-        const roadType = roadStr === '複雜' ? 'complex' : roadStr === '純馬路' ? 'road_only' : 'normal';
+        // 中文與英文備份檔都認得
+        const cityName = (cols[2] || '').trim();
+        const cityCode = CITY_CODES.find(c =>
+          c.name === cityName || c.code === cityName || c.en.toLowerCase() === cityName.toLowerCase()
+        )?.code || 'G';
+        const dirStr = (cols[7] || '').toLowerCase();
+        const direction = dirStr.includes('左') || dirStr.includes('left') ? 'left' : 'right';
+        const methodStr = (cols[15] || '').trim().toLowerCase();
+        const method = methodStr === '單車' || methodStr === 'bike' ? 'bike'
+          : methodStr === '機動車' || methodStr === 'vehicle' ? 'motor' : 'walk';
+        const roadStr = (cols[16] || '').trim().toLowerCase();
+        const roadType = roadStr === '複雜' || roadStr === 'complex' ? 'complex'
+          : roadStr === '純馬路' || roadStr === 'road only' ? 'road_only' : 'normal';
         const images: string[] = [];
         const imageFormula = cols[17] || '';
 
