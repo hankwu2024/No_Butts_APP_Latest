@@ -7,11 +7,19 @@
   --sand-200: #fdeecb;
   --orange: #f2994a;
   --orange-dark: #d97a2b;
+  --orange-ink: #b8601a;
+  --peach-100: #ffe8d4;
+  --muted: #55634e;
   --ink: #23321f;
   --paper: #fffdf8;
   --line: #e4ddc9;
+  --radius-sm: 12px;
   --radius: 20px;
+  --radius-lg: 28px;
   --shadow: 0 10px 30px -12px rgba(20, 67, 42, 0.25);
+  --shadow-pop: 4px 4px 0 var(--green-900);
+  --font-display: "Huninn", "Twemoji Country Flags", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-hand: "Caveat", "Huninn", cursive;
 }
 
 /* Windows has no flag emoji glyphs (🇺🇸 shows up as "US"); this font draws them as real flags. */
@@ -313,7 +321,7 @@ a:hover { text-decoration: underline; }
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   margin-top: -1px;
-  padding: 36px 0;
+  padding: 36px 24px;
 }
 
 .stat {
@@ -954,4 +962,198 @@ body.lightbox-open { overflow: hidden; }
 @media (max-width: 600px) {
   .app-popup { padding: 0; }
   .app-popup-panel { width: 100%; height: 100%; border-radius: 0; }
+}
+
+/* =====================================================================
+   Lively layer — "action scrapbook" direction (see DESIGN.md)
+   ===================================================================== */
+
+::selection { background: var(--sand-200); color: var(--green-900); }
+
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 3px;
+}
+
+/* ---------- Display + handwritten type ---------- */
+h1, h2, h3,
+.brand,
+.stat .num,
+.award-year-label,
+.st-root-node {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.hero h1 { font-size: clamp(2rem, 4.4vw, 3.1rem); }
+.section-head h2 { font-size: 1.85rem; line-height: 1.35; }
+
+.section-head .kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-hand);
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--orange-ink);
+  rotate: -2deg;
+  transform-origin: left center;
+}
+
+.section-head .kicker::before {
+  content: "";
+  width: 28px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--orange);
+}
+
+/* ---------- Hero: dotted paper, hand-drawn underline, taped photo ---------- */
+.hero {
+  background:
+    radial-gradient(circle, rgba(20, 67, 42, 0.09) 1.2px, transparent 1.6px) 0 0 / 22px 22px,
+    linear-gradient(180deg, var(--sand-200) 0%, var(--sand) 100%);
+}
+
+.hero h1 .accent {
+  color: var(--orange-ink);
+  padding-bottom: 0.12em;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8 C 30 2, 55 11, 85 6 S 140 2, 170 7 S 192 6, 198 4' fill='none' stroke='%23f2994a' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E") left bottom / 100% 0.32em no-repeat;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.hero-photo {
+  overflow: visible;
+  transition: rotate 0.3s ease;
+}
+
+.hero-photo:hover { rotate: -1.5deg; }
+
+.hero-photo::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: -16px;
+  left: 50%;
+  width: 110px;
+  height: 30px;
+  translate: -50% 0;
+  rotate: -4deg;
+  background: rgba(242, 153, 74, 0.55);
+  background-image: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.25) 0 6px, transparent 6px 12px);
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+/* ---------- Buttons: sticker press ---------- */
+.btn { transition: translate 0.15s ease, box-shadow 0.15s ease, background 0.2s ease; }
+.btn-primary { box-shadow: 0 4px 0 var(--green-900); }
+.btn-primary:hover { translate: 0 -2px; box-shadow: 0 6px 0 var(--green-900); }
+.btn-primary:active { translate: 0 3px; box-shadow: 0 1px 0 var(--green-900); }
+.btn-ghost { background: var(--paper); }
+.btn-ghost:hover { translate: 0 -2px; }
+
+/* ---------- Stats as stickers ---------- */
+.stat {
+  border-color: transparent;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, rotate 0.25s ease;
+}
+.stats .stat:nth-child(1) { background: var(--green-100); rotate: -1.5deg; }
+.stats .stat:nth-child(2) { background: var(--sand-200); rotate: 1deg; }
+.stats .stat:nth-child(3) { background: var(--peach-100); rotate: -0.8deg; }
+.stats .stat:nth-child(4) { background: var(--paper); border-color: var(--line); rotate: 1.4deg; }
+.stats .stat:hover { rotate: 0deg; box-shadow: var(--shadow-pop); }
+.stat .num { font-size: 2.1rem; font-variant-numeric: tabular-nums; }
+.stats .stat:nth-child(3) .num { color: var(--orange-ink); }
+
+/* ---------- Cards: each entry card gets its own color ---------- */
+.card .icon { transition: rotate 0.25s ease, scale 0.25s ease; }
+.card:hover .icon { rotate: -10deg; scale: 1.12; }
+.card-grid > .card-link:nth-child(1) .icon { background: var(--green-100); }
+.card-grid > .card-link:nth-child(2) .icon { background: var(--sand-200); }
+.card-grid > .card-link:nth-child(3) .icon { background: var(--peach-100); }
+.card-grid > .card-link:nth-child(1) { border-top: 5px solid var(--green-500); }
+.card-grid > .card-link:nth-child(2) { border-top: 5px solid #eecf8f; }
+.card-grid > .card-link:nth-child(3) { border-top: 5px solid var(--orange); }
+.card-cta { transition: translate 0.2s ease; }
+.card-link:hover .card-cta { translate: 4px 0; }
+
+/* ---------- Chips: a little hand-placed wobble ---------- */
+.chip-row .chip:nth-child(3n+1) { rotate: -1deg; }
+.chip-row .chip:nth-child(3n+2) { rotate: 0.8deg; }
+.chip-row .chip:hover { rotate: 0deg; }
+
+/* ---------- Quote card with a big handwritten mark ---------- */
+.quote { position: relative; padding-top: 56px; }
+.quote::before {
+  content: "\201C";
+  position: absolute;
+  top: -6px;
+  left: 28px;
+  font-family: var(--font-hand);
+  font-size: 6.5rem;
+  line-height: 1;
+  color: var(--orange);
+}
+
+/* ---------- Wavy section edges ---------- */
+section.alt { position: relative; }
+section.alt::before,
+section.alt::after,
+footer::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 18px;
+  background-repeat: repeat-x;
+  background-size: 120px 18px;
+  pointer-events: none;
+}
+section.alt::before {
+  top: -17px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 18'%3E%3Cpath d='M0 18 V10 C 20 0, 40 0, 60 10 S 100 20, 120 10 V18 Z' fill='%23e6f5eb'/%3E%3C/svg%3E");
+}
+section.alt::after {
+  bottom: -17px;
+  rotate: 180deg;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 18'%3E%3Cpath d='M0 18 V10 C 20 0, 40 0, 60 10 S 100 20, 120 10 V18 Z' fill='%23e6f5eb'/%3E%3C/svg%3E");
+}
+footer { position: relative; margin-top: 18px; }
+footer::before {
+  top: -17px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 18'%3E%3Cpath d='M0 18 V10 C 20 0, 40 0, 60 10 S 100 20, 120 10 V18 Z' fill='%2314432a'/%3E%3C/svg%3E");
+}
+
+/* ---------- Small delights ---------- */
+.brand-logo { transition: rotate 0.6s ease; }
+.brand:hover .brand-logo { rotate: 360deg; }
+.tl-item::before { transition: scale 0.2s ease; }
+.tl-item:hover::before { scale: 1.3; }
+
+/* ---------- Scroll reveal (classes added by assets/motion.js) ---------- */
+.reveal {
+  opacity: 0;
+  translate: 0 22px;
+  transition: opacity 0.6s ease, translate 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.18s ease, box-shadow 0.18s ease, rotate 0.25s ease;
+  transition-delay: var(--reveal-delay, 0s), var(--reveal-delay, 0s), 0s, 0s, 0s;
+}
+.reveal.in { opacity: 1; translate: 0 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; translate: none; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+
+@media (max-width: 860px) {
+  .hero-photo::before { width: 84px; height: 24px; top: -12px; }
+  .section-head .kicker { font-size: 1.3rem; }
 }
