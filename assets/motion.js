@@ -39,7 +39,40 @@
     }, { passive: true });
   }
 
+  // ---------- back-to-top button with a progress ring ----------
+  var top = document.createElement('button');
+  top.type = 'button';
+  top.className = 'to-top';
+  top.setAttribute('aria-label', 'Back to top');
+  top.innerHTML = '<svg viewBox="0 0 50 50" aria-hidden="true"><circle cx="25" cy="25" r="23"/></svg>↑';
+  document.body.appendChild(top);
+  var ring = top.querySelector('circle');
+  var C = 2 * Math.PI * 23;
+  ring.style.strokeDasharray = C;
+  function updateTop() {
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var p = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
+    ring.style.strokeDashoffset = C * (1 - p);
+    top.classList.toggle('show', window.scrollY > 600);
+  }
+  window.addEventListener('scroll', updateTop, { passive: true });
+  updateTop();
+  top.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); });
+
   if (reduce) return;
+
+  // ---------- buttons lean toward the cursor ----------
+  if (finePointer) {
+    document.querySelectorAll('.btn').forEach(function (btn) {
+      btn.addEventListener('pointermove', function (e) {
+        var r = btn.getBoundingClientRect();
+        var x = (e.clientX - r.left - r.width / 2) * 0.18;
+        var y = (e.clientY - r.top - r.height / 2) * 0.3;
+        btn.style.transform = 'translate(' + x + 'px,' + (y - 2) + 'px)';
+      });
+      btn.addEventListener('pointerleave', function () { btn.style.transform = ''; });
+    });
+  }
 
   // ---------- hero photo tilts toward the cursor ----------
   var photo = document.querySelector('.hero-photo');

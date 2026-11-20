@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="assets/style.css">
 <style>
   .editor { padding: 40px 0 120px; }
-  .editor h1 { margin: 0 0 8px; color: var(--green-900); font-size: 1.7rem; }
+  .editor h1 { margin: 0 0 8px; color: var(--primary-900); font-size: 1.7rem; }
   .editor .muted { color: #55634e; font-size: .92rem; }
   .gate { max-width: 420px; margin: 40px auto; }
   .gate input, .toolbar input, .toolbar select, .settings input {
@@ -18,24 +18,24 @@
   }
   .btn {
     display: inline-block; padding: 10px 18px; border-radius: 999px; border: 0; cursor: pointer;
-    background: var(--green-700); color: #fff; font: inherit; font-weight: 700;
+    background: var(--primary-700); color: #fff; font: inherit; font-weight: 700;
   }
-  .btn.ghost { background: #fff; color: var(--green-700); border: 1px solid var(--line); }
+  .btn.ghost { background: #fff; color: var(--primary-700); border: 1px solid var(--line); }
   .btn.warn { background: #b4501e; }
   .btn:disabled { opacity: .5; cursor: default; }
   .msg { margin-top: 12px; font-size: .92rem; min-height: 1.2em; }
   .msg.err { color: #b3261e; }
-  .msg.ok { color: var(--green-700); }
+  .msg.ok { color: var(--primary-700); }
   .toolbar { display: grid; grid-template-columns: 200px 1fr auto; gap: 12px; align-items: center; margin: 24px 0 14px; }
   .toolbar label { display: flex; gap: 6px; align-items: center; white-space: nowrap; font-size: .9rem; }
   .toolbar label input { width: auto; }
   .row { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; }
   .row.changed { border-color: #eecf8f; background: #fffaf0; }
   .row-head { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; font-size: .8rem; color: #55634e; }
-  .row-head code { background: var(--green-100); padding: 2px 8px; border-radius: 8px; word-break: break-all; }
-  .row-head button { margin-left: auto; background: none; border: 0; color: var(--green-700); cursor: pointer; font: inherit; text-decoration: underline; }
+  .row-head code { background: var(--primary-100); padding: 2px 8px; border-radius: 8px; word-break: break-all; }
+  .row-head button { margin-left: auto; background: none; border: 0; color: var(--primary-700); cursor: pointer; font: inherit; text-decoration: underline; }
   .cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .cols label { display: block; font-size: .75rem; font-weight: 700; color: var(--green-700); margin-bottom: 3px; }
+  .cols label { display: block; font-size: .75rem; font-weight: 700; color: var(--primary-700); margin-bottom: 3px; }
   .cols textarea {
     width: 100%; min-height: 64px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px;
     font: inherit; font-size: .92rem; resize: vertical; background: #fff; color: var(--ink);
@@ -46,9 +46,9 @@
   }
   .savebar .stat { font-size: .88rem; color: #55634e; margin-right: auto; }
   details.settings { margin: 0 0 18px; }
-  details.settings summary { cursor: pointer; font-weight: 700; color: var(--green-900); }
+  details.settings summary { cursor: pointer; font-weight: 700; color: var(--primary-900); }
   .settings .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
-  .settings label.f { display: block; font-size: .8rem; font-weight: 700; color: var(--green-700); margin-bottom: 3px; }
+  .settings label.f { display: block; font-size: .8rem; font-weight: 700; color: var(--primary-700); margin-bottom: 3px; }
   .preview-links a { margin-right: 14px; font-weight: 700; }
   @media (max-width: 760px) {
     .toolbar { grid-template-columns: 1fr; }
