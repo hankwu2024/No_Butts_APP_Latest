@@ -1486,3 +1486,9 @@ img.flag,
 .flag-kr { --flag: url("flags/kr.svg"); }
 .flag-sg { --flag: url("flags/sg.svg"); }
 .flag-us { --flag: url("flags/us.svg"); }
+
+/* No Butts Alliance hand-drawn logo wherever the alliance is shown */
+.card .icon.icon-logo,
+.card-grid > .card-link:nth-child(n) .icon.icon-logo { width: 64px; height: 46px; padding: 4px; background: #fff; border: 1px solid var(--line); }
+.icon-logo .nb-logo { width: 100%; height: 100%; object-fit: contain; }
+.eyebrow .eyebrow-logo { height: 22px; width: auto; mix-blend-mode: multiply; }
