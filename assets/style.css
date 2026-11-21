@@ -1361,3 +1361,128 @@ h1, h2, h3,
   .butt-field { min-height: 260px; }
   .butt { width: 54px; height: 14px; }
 }
+
+/* ---------- Icon system: monochrome line icons drawn in currentColor ---------- */
+.ico,
+.has-ico::before {
+  display: inline-block;
+  flex: none;
+  width: 1em;
+  height: 1em;
+  background: currentColor;
+  -webkit-mask: var(--ico) center / contain no-repeat;
+  mask: var(--ico) center / contain no-repeat;
+}
+.ico { vertical-align: -0.14em; }
+.has-ico::before { content: ""; width: 1.05em; height: 1.05em; margin-right: 0.45em; vertical-align: -0.17em; }
+
+img.flag,
+.has-flag::before {
+  display: inline-block;
+  flex: none;
+  width: 1.34em;
+  height: 1em;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+  vertical-align: -0.12em;
+  object-fit: cover;
+}
+.has-flag::before { content: ""; margin-right: 0.45em; background: var(--flag) center / cover; }
+.eyebrow.has-ico::before, .eyebrow.has-flag::before { margin-right: 0; }
+
+/* card icon: a quiet outlined tile with a colored line icon */
+.card .icon {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--primary-700);
+  font-size: 1.3rem;
+}
+.card-grid > .card-link:nth-child(1) .icon { background: var(--primary-100); border-color: transparent; color: var(--primary-700); }
+.card-grid > .card-link:nth-child(2) .icon { background: var(--sand-200); border-color: transparent; color: #8a5a12; }
+.card-grid > .card-link:nth-child(3) .icon { background: var(--accent-100); border-color: transparent; color: var(--accent-ink); }
+
+/* flags sit bare, no tile */
+.card .icon.icon-flag { width: auto; height: auto; border: 0; background: none; justify-content: flex-start; }
+.icon-flag img.flag { width: 34px; height: 25px; border-radius: 3px; }
+
+/* the photo already says what the card is about */
+.action-card[data-photo] > .icon:not(.icon-flag) { display: none; }
+
+.action-modal-icon { color: var(--primary-700); }
+.award-icon { color: var(--accent); }
+.award-list li.gold .award-icon { color: #b07d1a; }
+.st-node .st-icon { color: #eafff0; font-size: 1.15rem; }
+.st-detail-media { color: rgba(234, 255, 240, 0.85); }
+.chip.has-ico::before { color: var(--primary-700); }
+.chip.gold.has-ico::before { color: #b07d1a; }
+.hero-badge .ico { color: #b07d1a; }
+
+/* ---------- Line icons (Lucide, assets/icons) and flags (flag-icons, assets/flags) ---------- */
+.ico-award { --ico: url("icons/award.svg"); }
+.ico-backpack { --ico: url("icons/backpack.svg"); }
+.ico-bike { --ico: url("icons/bike.svg"); }
+.ico-book-open { --ico: url("icons/book-open.svg"); }
+.ico-brush { --ico: url("icons/brush.svg"); }
+.ico-camera { --ico: url("icons/camera.svg"); }
+.ico-cigarette-off { --ico: url("icons/cigarette-off.svg"); }
+.ico-circle-dot { --ico: url("icons/circle-dot.svg"); }
+.ico-clapperboard { --ico: url("icons/clapperboard.svg"); }
+.ico-clipboard-list { --ico: url("icons/clipboard-list.svg"); }
+.ico-compass { --ico: url("icons/compass.svg"); }
+.ico-drama { --ico: url("icons/drama.svg"); }
+.ico-dumbbell { --ico: url("icons/dumbbell.svg"); }
+.ico-flag { --ico: url("icons/flag.svg"); }
+.ico-globe { --ico: url("icons/globe.svg"); }
+.ico-graduation-cap { --ico: url("icons/graduation-cap.svg"); }
+.ico-hand { --ico: url("icons/hand.svg"); }
+.ico-handshake { --ico: url("icons/handshake.svg"); }
+.ico-heart { --ico: url("icons/heart.svg"); }
+.ico-house { --ico: url("icons/house.svg"); }
+.ico-landmark { --ico: url("icons/landmark.svg"); }
+.ico-laptop { --ico: url("icons/laptop.svg"); }
+.ico-leaf { --ico: url("icons/leaf.svg"); }
+.ico-life-buoy { --ico: url("icons/life-buoy.svg"); }
+.ico-lightbulb { --ico: url("icons/lightbulb.svg"); }
+.ico-mail { --ico: url("icons/mail.svg"); }
+.ico-medal { --ico: url("icons/medal.svg"); }
+.ico-megaphone { --ico: url("icons/megaphone.svg"); }
+.ico-message-circle { --ico: url("icons/message-circle.svg"); }
+.ico-mic { --ico: url("icons/mic.svg"); }
+.ico-mountain { --ico: url("icons/mountain.svg"); }
+.ico-newspaper { --ico: url("icons/newspaper.svg"); }
+.ico-palette { --ico: url("icons/palette.svg"); }
+.ico-party-popper { --ico: url("icons/party-popper.svg"); }
+.ico-pencil { --ico: url("icons/pencil.svg"); }
+.ico-radio { --ico: url("icons/radio.svg"); }
+.ico-radio-tower { --ico: url("icons/radio-tower.svg"); }
+.ico-refresh-cw { --ico: url("icons/refresh-cw.svg"); }
+.ico-sailboat { --ico: url("icons/sailboat.svg"); }
+.ico-school { --ico: url("icons/school.svg"); }
+.ico-search { --ico: url("icons/search.svg"); }
+.ico-shopping-cart { --ico: url("icons/shopping-cart.svg"); }
+.ico-smartphone { --ico: url("icons/smartphone.svg"); }
+.ico-sparkles { --ico: url("icons/sparkles.svg"); }
+.ico-star { --ico: url("icons/star.svg"); }
+.ico-sword { --ico: url("icons/sword.svg"); }
+.ico-swords { --ico: url("icons/swords.svg"); }
+.ico-tent { --ico: url("icons/tent.svg"); }
+.ico-trash-2 { --ico: url("icons/trash-2.svg"); }
+.ico-tree-palm { --ico: url("icons/tree-palm.svg"); }
+.ico-trophy { --ico: url("icons/trophy.svg"); }
+.ico-tv { --ico: url("icons/tv.svg"); }
+.ico-user-round { --ico: url("icons/user-round.svg"); }
+.ico-users { --ico: url("icons/users.svg"); }
+.ico-video { --ico: url("icons/video.svg"); }
+.ico-volleyball { --ico: url("icons/volleyball.svg"); }
+.ico-vote { --ico: url("icons/vote.svg"); }
+.ico-waves { --ico: url("icons/waves.svg"); }
+.ico-wrench { --ico: url("icons/wrench.svg"); }
+.ico-zap { --ico: url("icons/zap.svg"); }
+.flag-ca { --flag: url("flags/ca.svg"); }
+.flag-es { --flag: url("flags/es.svg"); }
+.flag-fr { --flag: url("flags/fr.svg"); }
+.flag-in { --flag: url("flags/in.svg"); }
+.flag-jp { --flag: url("flags/jp.svg"); }
+.flag-kr { --flag: url("flags/kr.svg"); }
+.flag-sg { --flag: url("flags/sg.svg"); }
+.flag-us { --flag: url("flags/us.svg"); }

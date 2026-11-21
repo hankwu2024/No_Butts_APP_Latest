@@ -60,4 +60,9 @@
 
 ## 圖像與圖示
 
-照片為主角，點擊皆可看原圖。現有 emoji 圖示保留在彩色圓角方塊裡。
+- 照片為主角，點擊皆可看原圖。有照片的卡片不再顯示圖示。
+- **圖示**：不用 emoji。統一用 Lucide 單色線條圖示（`assets/icons/`，ISC 授權），以 CSS mask 畫出、顏色跟著文字（currentColor）。
+  寫法：`<i class="ico ico-trophy" aria-hidden="true"></i>`；整段文字前面要加圖示且該元素有 `data-i18n` 時，用 `class="has-ico ico-trophy"`。
+  新增圖示：把 Lucide 的 svg 放進 `assets/icons/`，並在 style.css 加一行 `.ico-名稱 { --ico: url("icons/名稱.svg"); }`。
+- **國旗**：用 flag-icons 的長方形 SVG（`assets/flags/`，MIT 授權），`<img class="flag" src="assets/flags/jp.svg" alt="">`；有 `data-i18n` 的元素用 `has-flag flag-jp`。卡片上的國旗不加底框。
+- 例外：空手道戰績表的 🥇🥈🥉 保留（屬於內容），關閉按鈕的 ✕ 保留。

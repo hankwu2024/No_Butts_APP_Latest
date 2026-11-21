@@ -28,7 +28,7 @@
     var descEl = card.querySelector('p');
     var title = titleEl ? titleEl.innerHTML : '';
     var desc = descEl ? descEl.innerHTML : '';
-    var icon = card.querySelector('.icon') ? card.querySelector('.icon').textContent : '📌';
+    var icon = card.querySelector('.icon') ? card.querySelector('.icon').innerHTML : '';
     var photo = card.dataset.photo;
     actionModalTitle.innerHTML = title;
     actionModalDesc.innerHTML = desc;
