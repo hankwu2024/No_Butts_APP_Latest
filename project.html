@@ -21,6 +21,7 @@
       <a href="project.html" class="active" data-i18n="nav.project">不落蒂聯盟</a>
       <a href="interests.html" data-i18n="nav.interests">興趣愛好</a>
       <a href="about.html" data-i18n="nav.about">關於我</a>
+      <a href="screening/" class="nav-app" data-i18n="nav.app">菸蒂快篩 APP</a>
     </div>
     <div class="lang-switch">
       <button type="button" data-lang="zh">中</button>
@@ -35,7 +36,7 @@
     <div>
       <span class="eyebrow"><img class="eyebrow-logo" src="assets/images/logo_no_butts_mark.png" alt="不落蒂聯盟標誌"> No Butts Alliance</span>
       <h1 data-i18n="project.hero.title">不落蒂聯盟：<br>從<span class="accent">一根菸蒂</span>開始的環境行動</h1>
-      <p class="lead" data-i18n="project.hero.lead">一根菸蒂含有 4000 多種有毒物質，還能汙染 500 公升的水。全台灣每年被亂丟的菸蒂超過 900 萬根——換算起來，光是台灣就足以汙染 45 億公升的水。2023 年 8 月 23 日，我找了 5 個朋友，決定不再讓這件事被忽視。我是不落蒂聯盟的<strong>創辦人兼隊長</strong>，從第一次蹲下來撿菸蒂，到現在帶著團隊走進國會殿堂，一路都是我在領軍。</p>
+      <p class="lead" data-i18n="project.hero.lead">菸蒂的濾嘴是很難分解的塑膠。環境部推估，台灣每年至少有 91 億根菸蒂被丟進環境裡<a class="ref" href="#ref-ema-91">[1]</a>；實驗室研究也發現，1 公升水中約 1 根抽過的菸蒂浸出液，就足以讓一半的測試魚死亡<a class="ref" href="#ref-slaughter-2011">[2]</a>。2023 年 8 月 23 日，我找了 5 個朋友，決定不再讓這件事被忽視。我是不落蒂聯盟的<strong>創辦人兼隊長</strong>，和夥伴們一起從第一次蹲下來撿菸蒂，走到國會殿堂。</p>
       <div class="btn-row">
         <a href="#story" data-i18n="project.hero.btn">看我們怎麼開始 →</a>
       </div>
@@ -48,11 +49,12 @@
 </header>
 
 <div class="wrap stats">
-  <div class="stat"><span class="num">17,707+</span><span class="label" data-i18n="project.stats.butts">根菸蒂被撿起</span></div>
-  <div class="stat"><span class="num">94</span><span class="label" data-i18n="project.stats.actions">次淨街 / 倡議行動</span></div>
-  <div class="stat"><span class="num">117,608+</span><span class="label" data-i18n="project.stats.reach">線上線下觸及人數</span></div>
-  <div class="stat"><span class="num">300+</span><span class="label" data-i18n="project.stats.forum">人參加第二屆兒少行動論壇</span></div>
+  <div class="stat"><span class="num" data-stat="butts">17,707+</span><span class="label" data-i18n="project.stats.butts">根菸蒂被撿起</span></div>
+  <div class="stat"><span class="num" data-stat="actions">94</span><span class="label" data-i18n="project.stats.actions">次淨街 / 倡議行動</span></div>
+  <div class="stat"><span class="num" data-stat="reach">117,608+</span><span class="label" data-i18n="project.stats.reach">線上線下觸及人數</span></div>
+  <div class="stat"><span class="num" data-stat="forum">300+</span><span class="label" data-i18n="project.stats.forum">人參加第二屆兒少行動論壇</span></div>
 </div>
+<p class="wrap stat-note" data-stat-note="butts actions reach forum"></p>
 
 <section class="alt" id="action-map">
   <div class="wrap">
@@ -75,8 +77,8 @@
     <div class="card-grid action-grid">
       <div class="card action-card" data-cat="advocacy" data-photo="assets/images/action_cleanup.jpg" tabindex="0" role="button">
         <div class="icon"><i class="ico ico-brush" aria-hidden="true"></i></div>
-        <h3 data-i18n="project.map.c1.title">94 次街頭淨街</h3>
-        <p data-i18n="project.map.c1.desc">三年來累積 94 次淨街與倡議行動，撿起 17,707+ 根菸蒂。</p>
+        <h3 data-i18n="project.map.c1.title"><span data-stat="actions">94</span> 次街頭淨街</h3>
+        <p data-i18n="project.map.c1.desc">三年來累積 <span data-stat="actions">94</span> 次淨街與倡議行動，撿起 <span data-stat="butts">17,707+</span> 根菸蒂。</p>
       </div>
       <div class="card action-card" data-cat="advocacy art" data-photo="assets/images/action_no_butts_day.jpg" tabindex="0" role="button">
         <div class="icon"><i class="ico ico-party-popper" aria-hidden="true"></i></div>
@@ -267,7 +269,7 @@
         <h3 data-i18n="project.map.c12.title">濕地藝術節戲劇串連</h3>
         <p data-i18n="project.map.c12.desc">連續參與五十二甲溼地藝術節沉浸式戲劇《大水新娘》演出，並藉此串連 No Butts Day 快閃行動。</p>
       </div>
-      <a class="card card-link" data-cat="tech" href="screening/index.html">
+      <a class="card card-link" data-cat="tech" href="screening/">
         <div class="icon"><i class="ico ico-smartphone" aria-hidden="true"></i></div>
         <h3 data-i18n="project.map.c13.title">菸蒂快篩公民科學 APP</h3>
         <p data-i18n="project.map.c13.desc">我發起並主導開發的公民科學 APP，紀錄每一次淨街的地點與數量，是不落蒂聯盟科技行動的其中一個分頁。</p>
@@ -1119,7 +1121,7 @@
   </div>
 </section>
 
-<section class="alt">
+<section class="alt" id="tech">
   <div class="wrap">
     <div class="section-head">
       <span class="kicker">Technology</span>
@@ -1127,7 +1129,7 @@
       <p data-i18n="project.tech.lead">撿菸蒂只能解決現在，我想用資料和工具，讓問題從源頭被看見、被攔住。</p>
     </div>
     <div class="card-grid">
-      <a class="card card-link" href="screening/index.html">
+      <a class="card card-link" href="screening/">
         <div class="icon"><i class="ico ico-smartphone" aria-hidden="true"></i></div>
         <h3 data-i18n="project.tech.card1.title">菸蒂快篩公民科學 APP</h3>
         <p data-i18n="project.tech.card1.desc">紀錄每一次淨街撿拾的地點與數量，把散落街頭的菸蒂變成公部門也能參考的即時環境數據儀表板。</p>
@@ -1210,6 +1212,17 @@
   </div>
 </section>
 
+<section id="sources">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">Sources</span>
+      <h2 data-i18n="project.sources.title">資料來源</h2>
+      <p data-i18n="project.sources.lead">網站上的環境科學數字都附上出處。推估值和實驗室結果會標明條件，不當成實際清點的數字。</p>
+    </div>
+    <ol class="ref-list" data-references></ol>
+  </div>
+</section>
+
 <footer>
   <div class="wrap">
     <div>
@@ -1218,7 +1231,6 @@
     </div>
     <div class="links">
       <a href="mailto:lostmow1014@gmail.com">Email</a>
-      <a href="https://wa.me/886965858984" target="_blank" rel="noopener">WhatsApp</a>
       <a href="https://www.instagram.com/hankwu2024/" target="_blank" rel="noopener">Instagram</a>
       <a href="https://reurl.cc/1Xa10p" target="_blank" rel="noopener">YouTube</a>
       <a href="https://reurl.cc/M6x84W" target="_blank" rel="noopener">不落蒂 IG</a>
@@ -1243,6 +1255,7 @@
 <script src="assets/lightbox.js"></script>
 <script src="assets/app-popup.js?v=20261116"></script>
 <script src="assets/i18n.js"></script>
+<script src="assets/site-data.js"></script>
 <script src="assets/motion.js"></script>
 </body>
 </html>

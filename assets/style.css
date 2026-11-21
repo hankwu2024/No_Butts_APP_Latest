@@ -1508,3 +1508,86 @@ img.flag,
 .hero.has-shader .btn-ghost:hover { border-color: var(--accent); background: rgba(255, 255, 255, 0.06); }
 .hero.has-shader .hero-photo { box-shadow: 0 30px 60px -28px rgba(0, 0, 0, 0.8); }
 .hero.has-shader h1, .hero.has-shader p.lead { text-shadow: 0 1px 14px rgba(0, 0, 0, 0.45); }
+
+/* ---------- 2026-11 redesign phase 1 ---------- */
+.visually-hidden {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* nav: app entry */
+.nav-links a.nav-app { border: 1px solid var(--accent); color: var(--accent-ink); }
+.nav-links a.nav-app:hover { background: var(--accent-100); }
+
+/* stats source note */
+.stat-note { margin: 0 auto; padding-top: 10px; padding-bottom: 10px; font-size: 0.8rem; color: var(--muted); }
+.stat-note:empty { display: none; }
+
+/* home: impact band */
+section.impact-band { padding: 0; background: var(--primary-900); }
+.impact-band .stats { padding-left: 0; padding-right: 0; }
+.impact-band .stat-note { padding: 0 0 28px; color: #b9d3c2; }
+.impact-band .stat-note a { color: #fff; font-weight: 700; margin-left: 8px; white-space: nowrap; }
+
+/* home: selected work — one lead project and three smaller ones */
+.work-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  grid-template-rows: repeat(3, auto);
+  gap: 18px 28px;
+}
+.work-item {
+  display: grid;
+  grid-template-columns: 132px 1fr;
+  gap: 16px;
+  align-items: start;
+  color: inherit;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+.work-item:hover { text-decoration: none; }
+.work-item:hover h3 { color: var(--accent-ink); }
+.work-item:hover .card-cta { translate: 5px 0; color: var(--accent-ink); }
+.work-item img, .work-media { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-sm); }
+.work-media-app { display: grid; place-items: center; background: var(--primary-100); }
+.work-media-app img { width: 56px; height: 56px; aspect-ratio: 1; border-radius: 14px; }
+.work-item h3 { margin: 2px 0 4px; font-size: 1.05rem; color: var(--primary-900); transition: color .2s ease; }
+.work-item p { margin: 0; font-size: 0.92rem; color: var(--muted); line-height: 1.65; }
+.work-item .card-cta { margin-top: 6px; font-size: 0.88rem; transition: translate .2s ease; }
+.work-role { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; color: var(--accent-ink); }
+.work-lead { grid-row: 1 / span 3; grid-template-columns: 1fr; border-bottom: 0; padding-bottom: 0; }
+.work-lead img { aspect-ratio: 3 / 2; border-radius: var(--radius); }
+.work-lead h3 { font-size: 1.45rem; }
+.work-lead p { font-size: 1rem; }
+
+/* game: next steps after finishing */
+.game-next { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; }
+.game-next a { color: #fff; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.butt-hud .game-next[hidden] { display: none; }
+
+/* home: closing call to action */
+section.cta-band { background: var(--primary-100); }
+.cta-band h2 { margin: 0 0 8px; font-size: 2rem; color: var(--primary-900); }
+.cta-band p { margin: 0 0 20px; max-width: 52ch; color: var(--muted); }
+
+/* sources */
+a.ref { font-size: 0.72em; vertical-align: super; line-height: 0; margin-left: 1px; font-weight: 700; }
+.ref-list { margin: 0; padding-left: 1.4em; display: grid; gap: 16px; max-width: 760px; }
+.ref-list a { font-weight: 700; }
+.ref-list p { margin: 4px 0 0; color: var(--muted); font-size: 0.92rem; }
+.ref-list li:target { background: var(--accent-100); border-radius: var(--radius-sm); outline: 6px solid var(--accent-100); }
+
+@media (max-width: 860px) {
+  .work-grid { grid-template-columns: 1fr; }
+  .work-lead { grid-row: auto; }
+  .cta-band h2 { font-size: 1.6rem; }
+}
+@media (max-width: 420px) {
+  .work-item { grid-template-columns: 96px 1fr; }
+}
+@media (max-width: 420px) {
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat { padding: 4px 12px; }
+  .stat:nth-child(odd) { border-left: 0; padding-left: 0; }
+  .stat .num { font-size: 1.75rem; }
+}

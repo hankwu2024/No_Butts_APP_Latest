@@ -8,6 +8,7 @@
   var hint = game.querySelector('.butt-hint');
   var done = game.querySelector('.butt-done');
   var reset = game.querySelector('.butt-reset');
+  var next = game.querySelector('.game-next');
   var total = parseInt(game.dataset.total, 10) || 12;
   var picked = 0;
 
@@ -24,6 +25,7 @@
     hint.hidden = false;
     done.hidden = true;
     reset.hidden = true;
+    if (next) next.hidden = true;
     game.classList.remove('is-done');
 
     // spread the butts over a 4 x 3 grid, jittered inside each cell
@@ -35,7 +37,7 @@
       var b = document.createElement('button');
       b.type = 'button';
       b.className = 'butt';
-      b.setAttribute('aria-label', '🚬 ' + (i + 1));
+      b.setAttribute('aria-label', label(i + 1));
       b.style.left = x + '%';
       b.style.top = y + '%';
       b.style.setProperty('--rot', Math.round(Math.random() * 360) + 'deg');
@@ -68,8 +70,17 @@
       hint.hidden = true;
       done.hidden = false;
       reset.hidden = false;
+      if (next) next.hidden = false;
       game.classList.add('is-done');
     }
+  });
+
+  function label(i) {
+    var l = window.currentLang;
+    return (l === 'zh' ? '撿起菸蒂 ' : (l === 'ja' ? '吸い殻を拾う ' : 'Pick up butt ')) + i;
+  }
+  document.addEventListener('langchange', function () {
+    field.querySelectorAll('.butt').forEach(function (b, i) { b.setAttribute('aria-label', label(i + 1)); });
   });
 
   reset.addEventListener('click', scatter);
