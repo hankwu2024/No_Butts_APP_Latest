@@ -1508,3 +1508,6 @@ img.flag,
 .hero.has-shader .btn-ghost:hover { border-color: var(--accent); background: rgba(255, 255, 255, 0.06); }
 .hero.has-shader .hero-photo { box-shadow: 0 30px 60px -28px rgba(0, 0, 0, 0.8); }
 .hero.has-shader h1, .hero.has-shader p.lead { text-shadow: 0 1px 14px rgba(0, 0, 0, 0.45); }
+.butt-saved { color: #fff; font-size: 1.05rem; font-weight: 700; }
+.butt-saved b { color: var(--accent); font-size: 1.35em; font-variant-numeric: tabular-nums; }
+.butt-saved.pop b { display: inline-block; animation: bump 0.35s ease; }
